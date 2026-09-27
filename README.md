@@ -25,6 +25,15 @@ uvicorn app.main:app --app-dir backend --reload
 python -m pytest backend/tests/ -v
 ```
 
+### Upload Endpoint
+
+To upload a capture for investigation, POST a `.pcap` or `.pcapng` file to `/api/investigations`:
+
+```bash
+curl -i -F "file=@/path/to/capture.pcap" http://localhost:8000/api/investigations
+```
+
+
 ## Frontend
 
 ```bash
