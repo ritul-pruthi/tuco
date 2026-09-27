@@ -10,6 +10,14 @@ venv/
 # Node
 node_modules/
 dist/
+# PCAP captures and uploads
+*.pcap
+*.pcapng
+data/uploads/
+data/tmp/
+*.db
+*.sqlite
+*.sqlite3
 
 # Environment
 .env
