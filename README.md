@@ -16,6 +16,15 @@ Early development. See [SECURITY.md](SECURITY.md) for security requirements and 
 - Frontend: React, TypeScript, Vite
 - Storage: SQLite
 
+## Backend
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e .
+uvicorn app.main:app --app-dir backend --reload
+python -m pytest backend/tests/ -v
+```
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
