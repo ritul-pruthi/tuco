@@ -74,7 +74,7 @@ def test_upload_accepts_valid_pcap(client: TestClient):
     assert data["filename"] == "sample.pcap"
     assert data["format"] == "pcap"
     assert data["size_bytes"] == len(VALID_PCAP_BYTES)
-    assert data["status"] == "parsed"
+    assert data["status"] == "aggregated"
     assert data["packet_count"] == 0
     assert data["started_at"] is None
     assert data["ended_at"] is None
@@ -87,7 +87,7 @@ def test_upload_accepts_valid_pcap(client: TestClient):
         assert row is not None
         assert row["filename"] == "sample.pcap"
         assert row["format"] == "pcap"
-        assert row["status"] == "parsed"
+        assert row["status"] == "aggregated"
         assert row["packet_count"] == 0
         assert row["size_bytes"] == len(VALID_PCAP_BYTES)
 
@@ -103,7 +103,7 @@ def test_upload_accepts_valid_pcapng(client: TestClient):
     assert data["filename"] == "sample.pcapng"
     assert data["format"] == "pcapng"
     assert data["size_bytes"] == len(VALID_PCAPNG_BYTES)
-    assert data["status"] == "parsed"
+    assert data["status"] == "aggregated"
     assert data["packet_count"] == 0
 
 

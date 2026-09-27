@@ -188,7 +188,7 @@ def test_upload_returns_parsed_status(client: TestClient, tmp_path: Path):
 
     assert response.status_code == 201
     data = response.json()
-    assert data["status"] == "parsed"
+    assert data["status"] == "aggregated"
     assert data["packet_count"] == 3
     assert data["started_at"] is not None
     assert data["ended_at"] is not None
@@ -197,7 +197,7 @@ def test_upload_returns_parsed_status(client: TestClient, tmp_path: Path):
     with get_connection() as conn:
         row = conn.execute("SELECT * FROM investigations WHERE id = ?", (data["id"],)).fetchone()
         assert row is not None
-        assert row["status"] == "parsed"
+        assert row["status"] == "aggregated"
         assert row["packet_count"] == 3
         assert row["duration_seconds"] == 5.0
 

@@ -35,6 +35,8 @@ curl -i -F "file=@/path/to/capture.pcap" http://localhost:8000/api/investigation
 
 After upload, TUCO parses the capture and updates the investigation with packet count and time range.
 
+After parsing, TUCO aggregates hosts and exposes them at GET /api/investigations/{id}/hosts.
+
 
 ## Frontend
 
