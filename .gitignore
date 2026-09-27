@@ -13,6 +13,7 @@ dist/
 # PCAP captures and uploads
 *.pcap
 *.pcapng
+*.cap
 data/uploads/
 data/tmp/
 *.db
@@ -27,3 +28,6 @@ docs/internal/
 
 # OS
 .DS_Store
+*.cap
+*.pcapng
+*.pcap
