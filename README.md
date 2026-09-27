@@ -25,6 +25,15 @@ uvicorn app.main:app --app-dir backend --reload
 python -m pytest backend/tests/ -v
 ```
 
+## Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+npm run test -- --run
+```
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
