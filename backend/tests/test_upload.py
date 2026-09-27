@@ -9,7 +9,10 @@ from fastapi.testclient import TestClient
 
 VALID_PCAP_BYTES = b"\xd4\xc3\xb2\xa1\x02\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x01\x00\x00\x00"
 VALID_PCAP_BE_BYTES = b"\xa1\xb2\xc3\xd4\x00\x02\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x01\x00\x00"
-VALID_PCAPNG_BYTES = b"\x0a\x0d\x0d\x0a\x00\x00\x00\x20\x1a\x2b\x3c\x4d\x00\x01\x00\x00\xff\xff\xff\xff\xff\xff\xff\xff"
+VALID_PCAPNG_BYTES = (
+    b"\n\r\r\n\x1c\x00\x00\x00M<+\x1a\x01\x00\x00\x00\xff\xff\xff\xff\xff\xff\xff\xff"
+    b"\x1c\x00\x00\x00\x01\x00\x00\x00\x14\x00\x00\x00\x01\x00\x00\x00\x00\x00\x04\x00\x14\x00\x00\x00"
+)
 
 
 @pytest.fixture(autouse=True)
@@ -71,8 +74,8 @@ def test_upload_accepts_valid_pcap(client: TestClient):
     assert data["filename"] == "sample.pcap"
     assert data["format"] == "pcap"
     assert data["size_bytes"] == len(VALID_PCAP_BYTES)
-    assert data["status"] == "uploaded"
-    assert data["packet_count"] is None
+    assert data["status"] == "parsed"
+    assert data["packet_count"] == 0
     assert data["started_at"] is None
     assert data["ended_at"] is None
     assert data["duration_seconds"] is None
@@ -84,7 +87,8 @@ def test_upload_accepts_valid_pcap(client: TestClient):
         assert row is not None
         assert row["filename"] == "sample.pcap"
         assert row["format"] == "pcap"
-        assert row["status"] == "uploaded"
+        assert row["status"] == "parsed"
+        assert row["packet_count"] == 0
         assert row["size_bytes"] == len(VALID_PCAP_BYTES)
 
 
@@ -99,7 +103,8 @@ def test_upload_accepts_valid_pcapng(client: TestClient):
     assert data["filename"] == "sample.pcapng"
     assert data["format"] == "pcapng"
     assert data["size_bytes"] == len(VALID_PCAPNG_BYTES)
-    assert data["status"] == "uploaded"
+    assert data["status"] == "parsed"
+    assert data["packet_count"] == 0
 
 
 def test_upload_rejects_oversized_file(client: TestClient, monkeypatch: pytest.MonkeyPatch):

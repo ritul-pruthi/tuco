@@ -33,6 +33,8 @@ To upload a capture for investigation, POST a `.pcap` or `.pcapng` file to `/api
 curl -i -F "file=@/path/to/capture.pcap" http://localhost:8000/api/investigations
 ```
 
+After upload, TUCO parses the capture and updates the investigation with packet count and time range.
+
 
 ## Frontend
 
