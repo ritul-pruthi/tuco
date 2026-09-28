@@ -52,5 +52,31 @@ def init_db() -> None:
             ON hosts (investigation_id, ip)
             """
         )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS flows (
+                id TEXT PRIMARY KEY,
+                investigation_id TEXT NOT NULL REFERENCES investigations(id),
+                src_ip TEXT NOT NULL,
+                src_port INTEGER NOT NULL,
+                dst_ip TEXT NOT NULL,
+                dst_port INTEGER NOT NULL,
+                protocol TEXT NOT NULL,
+                packets_sent INTEGER NOT NULL DEFAULT 0,
+                packets_received INTEGER NOT NULL DEFAULT 0,
+                bytes_sent INTEGER NOT NULL DEFAULT 0,
+                bytes_received INTEGER NOT NULL DEFAULT 0,
+                first_seen TEXT NOT NULL,
+                last_seen TEXT NOT NULL,
+                tcp_state TEXT
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_flows_investigation_endpoints
+            ON flows (investigation_id, src_ip, dst_ip, protocol)
+            """
+        )
         conn.commit()
 

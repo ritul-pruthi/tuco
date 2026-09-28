@@ -37,6 +37,8 @@ After upload, TUCO parses the capture and updates the investigation with packet 
 
 After parsing, TUCO aggregates hosts and exposes them at GET /api/investigations/{id}/hosts.
 
+Flows are exposed at GET /api/investigations/{id}/flows.
+
 
 ## Frontend
 
