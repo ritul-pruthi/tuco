@@ -31,3 +31,9 @@ docs/internal/
 *.cap
 *.pcapng
 *.pcap
+# VS Code workspace settings
+.vscode/
+
+# VS Code workspace settings
+.vscode/
+
