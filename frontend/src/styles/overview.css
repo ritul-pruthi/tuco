@@ -110,6 +110,25 @@
   white-space: nowrap;
 }
 
+.overview-hosts-table .row-details-column {
+  width: 1%;
+  text-align: right;
+}
+
+.row-details-link {
+  display: inline-block;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.05rem;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.row-details-link:hover,
+.row-details-link:focus-visible {
+  color: var(--accent);
+}
+
 .empty-state p + p {
   margin-top: 8px;
 }

@@ -35,6 +35,11 @@
   background: rgba(255, 255, 255, 0.035);
 }
 
+.row-highlighted {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  transition: background-color 400ms ease-out;
+}
+
 .data-table .technical,
 .data-table .mono {
   font-family: var(--font-mono);

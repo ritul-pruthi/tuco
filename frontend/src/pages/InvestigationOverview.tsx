@@ -184,9 +184,9 @@ export function InvestigationOverview() {
         <section className="overview-section" aria-labelledby="hosts-heading">
           <div className="section-heading"><h2 id="hosts-heading">Hosts <span className="record-count">{hosts.length}</span></h2></div>
           {hosts.length === 0 ? <p className="empty-state">No hosts were observed in this capture.</p> : <>
-            <div className="table-wrap"><table>
-              <thead><tr><th>IP</th><th>Scope</th><th className="numeric">Sent</th><th className="numeric">Received</th><th>First seen</th></tr></thead>
-              <tbody>{visibleHosts.map((host) => <tr key={host.id}><td className="mono"><Link className="overview-ip-link" to={`/investigations/${id}/connections?host=${host.ip}`}>{host.ip}</Link></td><td>{host.scope}</td><td className="mono numeric">{formatNumber(host.packets_sent)}</td><td className="mono numeric">{formatNumber(host.packets_received)}</td><td className="mono">{formatTimestamp(host.first_seen)}</td></tr>)}</tbody>
+            <div className="table-wrap"><table className="overview-hosts-table">
+              <thead><tr><th>IP</th><th>Scope</th><th className="numeric">Sent</th><th className="numeric">Received</th><th>First seen</th><th className="row-details-column">·</th></tr></thead>
+              <tbody>{visibleHosts.map((host) => <tr key={host.id}><td className="mono"><Link className="overview-ip-link" to={`/investigations/${id}/connections?host=${host.ip}`}>{host.ip}</Link></td><td>{host.scope}</td><td className="mono numeric">{formatNumber(host.packets_sent)}</td><td className="mono numeric">{formatNumber(host.packets_received)}</td><td className="mono">{formatTimestamp(host.first_seen)}</td><td className="row-details-column"><Link aria-label="View host details" className="row-details-link" to={`/investigations/${id}/hosts?highlight=${encodeURIComponent(host.ip)}`}>›</Link></td></tr>)}</tbody>
             </table></div>
             <Link className="overview-secondary-link" to={`/investigations/${id}/hosts`}>View all {hosts.length} hosts</Link>
             <Link className="overview-secondary-link" to={`/investigations/${id}/connections`}>View all connections</Link>

@@ -38,6 +38,7 @@ describe('InvestigationOverview', () => {
     expect(screen.getByText('1 medium')).toBeInTheDocument()
     expect(screen.getAllByText('10.0.0.1')).not.toHaveLength(0)
     expect(screen.getByRole('link', { name: '10.0.0.1' })).toHaveAttribute('href', `/investigations/${investigation.id}/connections?host=10.0.0.1`)
+    expect(screen.getByRole('link', { name: 'View host details' })).toHaveAttribute('href', `/investigations/${investigation.id}/hosts?highlight=${encodeURIComponent(host.ip)}`)
     expect(screen.getByRole('link', { name: 'View all 1 hosts' })).toHaveAttribute('href', `/investigations/${investigation.id}/hosts`)
   })
 

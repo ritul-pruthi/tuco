@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { getHosts } from '../services/api'
 import type { Host } from '../types/api'
 
@@ -24,9 +24,13 @@ function errorMessage(error: unknown): string {
 
 export function HostsPage() {
   const { id = '' } = useParams<{ id: string }>()
+  const [searchParams] = useSearchParams()
+  const highlightIp = searchParams.get('highlight')
   const [hosts, setHosts] = useState<Host[]>([])
+  const [highlightedHostId, setHighlightedHostId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const highlightedHostRef = useRef<HTMLTableRowElement | null>(null)
 
   useEffect(() => {
     let isMounted = true
@@ -42,6 +46,21 @@ export function HostsPage() {
       })
     return () => { isMounted = false }
   }, [id])
+
+  useEffect(() => {
+    if (isLoading || !highlightIp) return
+    const highlightedHost = hosts.find((host) => host.ip === highlightIp)
+    if (!highlightedHost) return
+    const activationId = window.setTimeout(() => {
+      setHighlightedHostId(highlightedHost.id)
+      highlightedHostRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'center' })
+    }, 0)
+    const timeoutId = window.setTimeout(() => setHighlightedHostId(null), 2000)
+    return () => {
+      window.clearTimeout(activationId)
+      window.clearTimeout(timeoutId)
+    }
+  }, [highlightIp, hosts, isLoading])
 
   const sortedHosts = [...hosts].sort(
     (left, right) => (right.packets_sent + right.packets_received) - (left.packets_sent + left.packets_received),
@@ -62,7 +81,7 @@ export function HostsPage() {
           <div className="table-wrap">
             <table className="data-table">
               <thead><tr><th>IP</th><th>MAC</th><th>Scope</th><th className="numeric">Sent pkts</th><th className="numeric">Recv pkts</th><th className="numeric">Sent bytes</th><th className="numeric">Recv bytes</th><th className="numeric">Unique dsts</th><th className="numeric">Unique ports</th><th>First seen</th></tr></thead>
-              <tbody>{sortedHosts.map((host) => <tr key={host.id}>
+              <tbody>{sortedHosts.map((host) => <tr className={host.id === highlightedHostId ? 'row-highlighted' : undefined} key={host.id} ref={host.ip === highlightIp ? highlightedHostRef : undefined}>
                 <td><Link className="ip-link" to={`/investigations/${id}/connections?host=${encodeURIComponent(host.ip)}`}>{host.ip}</Link></td>
                 <td className="mono">{host.mac ?? '—'}</td><td>{host.scope}</td>
                 <td className="mono numeric">{formatNumber(host.packets_sent)}</td><td className="mono numeric">{formatNumber(host.packets_received)}</td>
