@@ -57,6 +57,8 @@ npm run dev
 npm run test -- --run
 ```
 
+Open http://localhost:5173. Backend must be running at http://localhost:8000. Upload a PCAP at `/` - the app calls the backend and lists recent investigations.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

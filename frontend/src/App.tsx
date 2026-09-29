@@ -1,32 +1,22 @@
-import { useEffect, useState } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import Layout from './components/Layout'
+import InvestigationPlaceholder from './pages/InvestigationPlaceholder'
+import NotFoundPage from './pages/NotFoundPage'
+import UploadPage from './pages/UploadPage'
 
 export function App() {
-  const [status, setStatus] = useState<'checking...' | 'ok' | 'unreachable'>('checking...')
-
-  useEffect(() => {
-    let isMounted = true
-    fetch('http://localhost:8000/health')
-      .then((res) => {
-        if (!res.ok) throw new Error('Network error')
-        return res.json()
-      })
-      .then((data) => {
-        if (isMounted) {
-          setStatus(data?.status === 'ok' ? 'ok' : 'unreachable')
-        }
-      })
-      .catch(() => {
-        if (isMounted) {
-          setStatus('unreachable')
-        }
-      })
-
-    return () => {
-      isMounted = false
-    }
-  }, [])
-
-  return <p>Backend: {status}</p>
+  return (
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route element={<UploadPage />} path="/" />
+          <Route element={<InvestigationPlaceholder />} path="/investigations/:id" />
+          <Route element={<InvestigationPlaceholder />} path="/investigations/:id/:section" />
+          <Route element={<NotFoundPage />} path="*" />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
+  )
 }
 
 export default App
