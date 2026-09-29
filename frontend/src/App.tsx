@@ -4,6 +4,8 @@ import InvestigationOverview from './pages/InvestigationOverview'
 import InvestigationPlaceholder from './pages/InvestigationPlaceholder'
 import HostsPage from './pages/HostsPage'
 import FlowsPage from './pages/FlowsPage'
+import DetectionsPage from './pages/DetectionsPage'
+import DetectionDetailPage from './pages/DetectionDetailPage'
 import NotFoundPage from './pages/NotFoundPage'
 import UploadPage from './pages/UploadPage'
 
@@ -17,6 +19,8 @@ export function App() {
           <Route element={<HostsPage />} path="/investigations/:id/hosts" />
           <Route element={<FlowsPage />} path="/investigations/:id/connections" />
           <Route element={<FlowsPage />} path="/investigations/:id/flows" />
+          <Route element={<DetectionsPage />} path="/investigations/:id/detections" />
+          <Route element={<DetectionDetailPage />} path="/investigations/:id/detections/:detectionId" />
           <Route element={<InvestigationPlaceholder />} path="/investigations/:id/:section" />
           <Route element={<NotFoundPage />} path="*" />
         </Routes>

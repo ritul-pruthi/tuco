@@ -53,3 +53,21 @@ export async function getDetections(id: string): Promise<Detection[]> {
   const response = await fetch(`${API_BASE}/investigations/${encodeURIComponent(id)}/detections`)
   return parseResponse<Detection[]>(response)
 }
+
+export async function getDetection(id: string, detectionId: string): Promise<Detection> {
+  const detection = (await getDetections(id)).find((item) => item.id === detectionId)
+  if (!detection) throw new Error('Detection not found')
+  return detection
+}
+
+export async function getFlow(id: string, flowId: string): Promise<Flow> {
+  const flow = (await getFlows(id)).find((item) => item.id === flowId)
+  if (!flow) throw new Error('Flow not found')
+  return flow
+}
+
+export async function getHost(id: string, hostId: string): Promise<Host> {
+  const host = (await getHosts(id)).find((item) => item.id === hostId)
+  if (!host) throw new Error('Host not found')
+  return host
+}

@@ -137,9 +137,9 @@ export function InvestigationOverview() {
                 return <span className={`severity-text severity-${severity}`} key={severity}>{count} {severity}</span>
               }).reduce<React.ReactNode[]>((parts, item, index) => index === 0 ? [item] : [...parts, ', ', item], [])}</p>
               <div className="table-wrap"><table>
-                <thead><tr><th>Title</th><th>Severity</th><th>Source</th><th>Destination</th><th>Observed metric</th></tr></thead>
+                <thead><tr><th>Title</th><th>Severity</th><th>Source</th><th>Destination</th><th>Observed metric</th><th>Evidence</th></tr></thead>
                 <tbody>{detections.map((detection) => <tr className="overview-row" key={detection.id} onClick={() => navigate(`/investigations/${id}/detections`)} tabIndex={0} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') navigate(`/investigations/${id}/detections`) }}>
-                  <td>{detection.title}</td><td><span className={`severity-text severity-${detection.severity}`}>{detection.severity}</span></td><td className="mono">{detection.source_ip}</td><td className="mono">{detection.destination_ip}</td><td className="mono numeric">{detection.observed_metric}</td>
+                  <td>{detection.title}</td><td><span className={`severity-text severity-${detection.severity}`}>{detection.severity}</span></td><td className="mono">{detection.source_ip}</td><td className="mono">{detection.destination_ip}</td><td className="mono numeric">{detection.observed_metric}</td><td><Link className="text-link" onClick={(event) => event.stopPropagation()} to={`/investigations/${id}/detections/${detection.id}`}>View Evidence</Link></td>
                 </tr>)}</tbody>
               </table></div>
             </div>
