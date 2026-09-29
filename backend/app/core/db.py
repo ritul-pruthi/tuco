@@ -78,5 +78,25 @@ def init_db() -> None:
             ON flows (investigation_id, src_ip, dst_ip, protocol)
             """
         )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS dns_records (
+                id TEXT PRIMARY KEY,
+                investigation_id TEXT NOT NULL REFERENCES investigations(id),
+                timestamp TEXT NOT NULL,
+                source_ip TEXT NOT NULL,
+                destination_ip TEXT NOT NULL,
+                query TEXT NOT NULL,
+                query_type TEXT NOT NULL,
+                response_code INTEGER NOT NULL,
+                answers TEXT NOT NULL
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_dns_records_investigation_query
+            ON dns_records (investigation_id, query)
+            """
+        )
         conn.commit()
-

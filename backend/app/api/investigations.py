@@ -5,11 +5,14 @@ from typing import Annotated
 
 from app.core.db import get_connection
 from app.core.storage import save_upload
+from app.investigation.dns_repo import get_dns_records, save_dns_records
 from app.investigation.flows_repo import get_flows, save_flows
 from app.investigation.hosts_repo import get_hosts, save_hosts
+from app.parsers.dns_extractor import extract_dns
 from app.parsers.flow_aggregator import aggregate_flows
 from app.parsers.host_aggregator import aggregate_hosts
 from app.parsers.pcap_parser import parse_pcap
+from app.schemas.dns_record import DnsRecord
 from app.schemas.flow import Flow
 from app.schemas.host import Host
 from app.schemas.investigation import InvestigationResponse
@@ -87,9 +90,11 @@ def create_investigation(file: Annotated[UploadFile, File()]):
         # Run host and flow aggregation synchronously
         hosts = aggregate_hosts(final_path, file_format, inv_id)
         flows = aggregate_flows(final_path, file_format, inv_id)
+        dns_records = extract_dns(final_path, file_format, inv_id)
         with get_connection() as conn:
             save_hosts(conn, inv_id, hosts)
             save_flows(conn, inv_id, flows)
+            save_dns_records(conn, inv_id, dns_records)
             conn.execute(
                 "UPDATE investigations SET status = ? WHERE id = ?",
                 ("aggregated", inv_id),
@@ -174,3 +179,15 @@ def get_investigation_flows(investigation_id: str):
         if inv is None:
             raise HTTPException(status_code=404, detail="Investigation not found")
         return get_flows(conn, investigation_id)
+
+
+@router.get("/investigations/{investigation_id}/dns", response_model=list[DnsRecord])
+def get_investigation_dns(investigation_id: str):
+    with get_connection() as conn:
+        inv = conn.execute(
+            "SELECT id FROM investigations WHERE id = ?",
+            (investigation_id,),
+        ).fetchone()
+        if inv is None:
+            raise HTTPException(status_code=404, detail="Investigation not found")
+        return get_dns_records(conn, investigation_id)

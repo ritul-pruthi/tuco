@@ -24,6 +24,7 @@ pip install -e .
 uvicorn app.main:app --app-dir backend --reload
 python -m pytest backend/tests/ -v
 ```
+DNS records are exposed at `GET /api/investigations/{id}/dns`.
 
 ### Upload Endpoint
 
@@ -52,3 +53,5 @@ npm run test -- --run
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+

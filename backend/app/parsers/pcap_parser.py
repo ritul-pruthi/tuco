@@ -7,22 +7,25 @@ from scapy.utils import PcapNgReader, PcapReader
 from app.schemas.pcap_summary import PcapSummary
 
 
+def get_reader_class(file_format: str):
+    normalized_format = file_format.lower().lstrip(".")
+    if normalized_format == "pcapng":
+        return PcapNgReader
+    if normalized_format == "pcap":
+        return PcapReader
+    raise ValueError(f"Unsupported capture file format: '{file_format}'")
+
+
 def parse_pcap(path: Path, file_format: str) -> PcapSummary:
     """Parse a PCAP or PCAPNG capture file and return a summary of basic facts.
 
     Uses streaming readers to process packets one-by-one without loading the entire
     capture into memory.
     """
-    normalized_format = file_format.lower().lstrip(".")
-    if normalized_format == "pcapng":
-        reader_cls = PcapNgReader
-    elif normalized_format == "pcap":
-        reader_cls = PcapReader
-    else:
-        raise ValueError(f"Unsupported capture file format: '{file_format}'")
-
     if not path.is_file():
         raise ValueError(f"Capture file does not exist: '{path}'")
+
+    reader_cls = get_reader_class(file_format)
 
     packet_count = 0
     first_timestamp: float | None = None
