@@ -129,7 +129,7 @@ def extract_iocs(conn: sqlite3.Connection, investigation_id: str) -> list[Ioc]:
             last_seen=data["last_seen"].isoformat(),
             occurrences=data["occurrences"],
             scope=data["scope"],
-            evidence_type=data["evidence_type"],
+            evidence_type=(next(iter(data["sources"])) if len(data["sources"]) == 1 else "mixed"),
             evidence_ids=data["evidence_ids"],
         )
         for data in accumulators.values()
@@ -195,11 +195,12 @@ def _add_ioc(
             "last_seen": last_seen,
             "occurrences": 0,
             "scope": scope,
-            "evidence_type": evidence_type,
+            "sources": set(),
             "evidence_ids": [],
         },
     )
     data["occurrences"] += 1
+    data["sources"].add(evidence_type)
     data["first_seen"] = min(data["first_seen"], first_seen)
     data["last_seen"] = max(data["last_seen"], last_seen)
     if evidence_id not in data["evidence_ids"] and len(data["evidence_ids"]) < 20:

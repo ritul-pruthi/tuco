@@ -162,6 +162,23 @@ def test_extract_domains_from_dns():
     assert find_ioc(iocs, "domain", "www.example.com").evidence_type == "dns"
 
 
+def test_evidence_type_is_mixed_when_sources_differ():
+    iocs = extract_with(
+        dns_records=[make_dns("dns-1", "example.com")],
+        http_records=[make_http("http-1", host="example.com")],
+    )
+
+    ioc = find_ioc(iocs, "domain", "example.com")
+    assert ioc.evidence_type == "mixed"
+    assert ioc.occurrences >= 2
+
+
+def test_evidence_type_single_source():
+    iocs = extract_with(dns_records=[make_dns("dns-1", "example.com")])
+
+    assert find_ioc(iocs, "domain", "example.com").evidence_type == "dns"
+
+
 def test_extract_domains_from_http_host():
     iocs = extract_with(http_records=[make_http("http-1", host="WWW.Example.COM")])
 
