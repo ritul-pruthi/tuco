@@ -15,3 +15,16 @@ INTERNAL_RECON_WINDOW_SECONDS = 30
 INTERNAL_RECON_SEVERITY = "medium"
 # The threshold is deterministic, but legitimate inventory and vulnerability tools can produce the same pattern.
 INTERNAL_RECON_CONFIDENCE = "medium"
+
+# Ten observations provide enough samples to distinguish a repeated pattern from a single connection burst.
+BEACON_MIN_OBSERVATIONS = 10
+# A minute-long span gives periodic behavior enough time to become meaningful.
+BEACON_MIN_DURATION_SECONDS = 60
+# A CV below 0.20 represents sufficiently regular intervals for a deterministic beacon heuristic.
+BEACON_MAX_INTERVAL_CV = 0.20
+# Sub-second intervals are more likely to reflect packet noise than application check-ins.
+BEACON_MIN_INTERVAL_SECONDS = 1
+# Periodic communication is noteworthy, but the pattern alone is not evidence of compromise.
+BEACON_SEVERITY = "medium"
+# Periodic traffic has many legitimate causes, so confidence remains low without payload context.
+BEACON_CONFIDENCE = "low"
