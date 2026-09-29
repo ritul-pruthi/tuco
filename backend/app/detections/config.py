@@ -28,3 +28,18 @@ BEACON_MIN_INTERVAL_SECONDS = 1
 BEACON_SEVERITY = "medium"
 # Periodic traffic has many legitimate causes, so confidence remains low without payload context.
 BEACON_CONFIDENCE = "low"
+
+# Queries longer than 52 characters are uncommon in ordinary DNS lookups.
+DNS_LONG_QUERY_LENGTH = 52
+# One hundred queries in a minute indicates unusually concentrated DNS activity.
+DNS_HIGH_FREQUENCY_COUNT = 100
+# This window captures short DNS bursts without grouping routine activity across minutes.
+DNS_HIGH_FREQUENCY_WINDOW_SECONDS = 60
+# Twenty distinct subdomains under one parent indicates unusual name variability.
+DNS_SUBDOMAIN_VARIABILITY_THRESHOLD = 20
+# Ten failed responses indicate a repeated DNS resolution problem worth investigating.
+DNS_REPEATED_FAILURE_COUNT = 10
+# DNS anomaly indicators are low-severity observations requiring investigation.
+DNS_ANOMALY_SEVERITY = "low"
+# DNS anomaly indicators have low confidence because legitimate software can produce them.
+DNS_ANOMALY_CONFIDENCE = "low"
