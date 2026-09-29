@@ -25,6 +25,7 @@ uvicorn app.main:app --app-dir backend --reload
 python -m pytest backend/tests/ -v
 ```
 DNS records are exposed at `GET /api/investigations/{id}/dns`.
+HTTP records are exposed at `GET /api/investigations/{id}/http`.
 
 ### Upload Endpoint
 

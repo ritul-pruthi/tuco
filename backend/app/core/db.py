@@ -99,4 +99,28 @@ def init_db() -> None:
             ON dns_records (investigation_id, query)
             """
         )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS http_records (
+                id TEXT PRIMARY KEY,
+                investigation_id TEXT NOT NULL REFERENCES investigations(id),
+                timestamp TEXT NOT NULL,
+                source_ip TEXT NOT NULL,
+                source_port INTEGER NOT NULL,
+                destination_ip TEXT NOT NULL,
+                destination_port INTEGER NOT NULL,
+                method TEXT NOT NULL,
+                host TEXT,
+                path TEXT,
+                user_agent TEXT,
+                status_code INTEGER
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_http_records_investigation_host
+            ON http_records (investigation_id, host)
+            """
+        )
         conn.commit()
