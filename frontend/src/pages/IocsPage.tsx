@@ -24,7 +24,16 @@ function formatNumber(value: number): string {
 function evidenceLink(id: string, ioc: Ioc): string | null {
   if (ioc.evidence_type === 'host') return `/investigations/${id}/hosts`
   if (ioc.evidence_type === 'flow') return `/investigations/${id}/connections`
+  if (ioc.evidence_type === 'dns') return `/investigations/${id}/dns`
+  if (ioc.evidence_type === 'http') return `/investigations/${id}/http`
   return null
+}
+
+function valueLink(id: string, ioc: Ioc): string {
+  if (ioc.ioc_type === 'ipv4' || ioc.ioc_type === 'ipv6') return `/investigations/${id}/connections?host=${ioc.value}`
+  if (ioc.ioc_type === 'domain') return `/investigations/${id}/dns?domain=${ioc.value}`
+  if (ioc.ioc_type === 'url') return `/investigations/${id}/http?url=${encodeURIComponent(ioc.value)}`
+  return `/investigations/${id}/http?ua=${encodeURIComponent(ioc.value)}`
 }
 
 function evidenceLabel(ioc: Ioc): string {
@@ -57,12 +66,12 @@ function IocTable({ id, iocs, type }: { id: string; iocs: Ioc[]; type: IocType }
           const link = evidenceLink(id, ioc)
           const value = type === 'url' ? ioc.value.slice(0, 80) : ioc.value
           return <tr key={ioc.id}>
-            <td className={type === 'user_agent' ? 'ioc-user-agent' : 'mono'} title={type === 'url' ? ioc.value : undefined}>{value}{type === 'url' && ioc.value.length > 80 ? '...' : ''}</td>
+            <td className={`ioc-value-cell ${type === 'user_agent' ? 'ioc-user-agent' : 'mono'}`}><Link className="ioc-value-link" to={valueLink(id, ioc)} title={ioc.value}>{value}{type === 'url' && ioc.value.length > 80 ? '...' : ''}</Link></td>
             {showScope && <td><span className={scopeClass(ioc.scope)}>{ioc.scope}</span></td>}
             <td className="mono numeric">{formatNumber(ioc.occurrences)}</td>
             <td className="mono">{formatTimestamp(ioc.first_seen)}</td>
             {showLastSeen && <td className="mono">{formatTimestamp(ioc.last_seen)}</td>}
-            <td>{link ? <Link className="text-link" to={link}>{evidenceLabel(ioc)}</Link> : <span className="ioc-muted-evidence">{evidenceLabel(ioc)}</span>}</td>
+            <td className={link ? 'ioc-evidence-cell ioc-clickable-cell' : 'ioc-evidence-cell'}>{link ? <Link className="text-link" to={link}>{evidenceLabel(ioc)}</Link> : <span className="ioc-muted-evidence">{evidenceLabel(ioc)}</span>}</td>
           </tr>
         })}</tbody>
       </table>
@@ -89,7 +98,7 @@ export function IocsPage() {
     <header className="detail-header">
       <div>
         <p className="eyebrow">Investigation indicators</p>
-        <h1>Indicators of Compromise <span className="record-count">{iocs.length}</span></h1>
+        <h1>Observables <span className="record-count">{iocs.length}</span></h1>
         <p className="detail-subtitle">Observed indicators from this capture. These are observations, not verdicts.</p>
       </div>
       <span className="detail-count">Investigation {id.slice(0, 8)}</span>

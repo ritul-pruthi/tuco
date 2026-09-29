@@ -34,7 +34,22 @@
   max-width: 520px;
 }
 
-.ioc-table td[title] {
+.ioc-value-cell,
+.ioc-clickable-cell {
+  cursor: pointer;
+}
+
+.ioc-value-link {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.ioc-value-link:hover,
+.ioc-value-link:focus-visible {
+  text-decoration: underline;
+}
+
+.ioc-value-link[title] {
   max-width: 560px;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import IocsPage from '../src/pages/IocsPage'
 
@@ -13,12 +13,24 @@ const iocs = [
 ]
 
 function renderPage() {
-  return render(<MemoryRouter initialEntries={['/investigations/abc12345/iocs']}><Routes><Route path="/investigations/:id/iocs" element={<IocsPage />} /></Routes></MemoryRouter>)
+  return render(<MemoryRouter initialEntries={['/investigations/abc12345/iocs']}><Routes><Route path="/investigations/:id/iocs" element={<IocsPage />} /><Route path="*" element={<LocationProbe />} /></Routes></MemoryRouter>)
+}
+
+function LocationProbe() {
+  const location = useLocation()
+  return <output data-testid="location">{location.pathname}{location.search}</output>
 }
 
 afterEach(() => vi.restoreAllMocks())
 
 describe('IocsPage', () => {
+  it('renders the Observables heading', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [] }))
+    renderPage()
+    expect(await screen.findByRole('heading', { name: /Observables/ })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /Indicators of Compromise/ })).not.toBeInTheDocument()
+  })
+
   it('renders present IOC sections and omits empty types', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => iocs }))
     renderPage()
@@ -36,10 +48,18 @@ describe('IocsPage', () => {
     expect(screen.getByRole('link', { name: 'Host records' })).toHaveAttribute('href', '/investigations/abc12345/hosts')
   })
 
+  it('navigates from an IPv4 value to filtered connections', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [iocs[0]] }))
+    renderPage()
+    fireEvent.click(await screen.findByRole('link', { name: '10.0.0.5' }))
+    expect(screen.getByTestId('location')).toHaveTextContent('/investigations/abc12345/connections?host=10.0.0.5')
+  })
+
   it('truncates long URLs while preserving the full title', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [iocs[3]] }))
     renderPage()
     const url = await screen.findByTitle(iocs[3].value)
+    expect(url).toHaveAttribute('href', `/investigations/abc12345/http?url=${encodeURIComponent(iocs[3].value)}`)
     expect(url).toHaveTextContent(`${iocs[3].value.slice(0, 80)}...`)
     expect(url.textContent).toHaveLength(83)
   })
