@@ -6,6 +6,7 @@ import './styles/overview.css'
 import './styles/tables.css'
 import './styles/upload.css'
 import './styles/detections.css'
+import './styles/timeline.css'
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(

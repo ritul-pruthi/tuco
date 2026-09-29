@@ -32,6 +32,13 @@
   font-size: 0.75rem;
 }
 
+.overview-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex: 0 0 auto;
+}
+
 .metadata-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -133,6 +140,10 @@
 @media (max-width: 560px) {
   .overview-header {
     display: grid;
+  }
+
+  .overview-header-actions {
+    justify-content: space-between;
   }
 
   .metadata-grid {

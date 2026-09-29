@@ -75,3 +75,17 @@ export interface Detection {
   limitations: string
   created_at: string
 }
+
+export type EventType = 'host_first_seen' | 'dns_query' | 'http_request' | 'tls_handshake' | 'detection' | 'large_transfer'
+
+export interface TimelineEvent {
+  id: string
+  investigation_id: string
+  timestamp: string
+  event_type: EventType
+  source: string | null
+  destination: string | null
+  summary: string
+  evidence_type: 'host' | 'flow' | 'dns' | 'http' | 'tls' | 'detection'
+  evidence_id: string
+}

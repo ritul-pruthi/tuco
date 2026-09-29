@@ -107,7 +107,10 @@ export function InvestigationOverview() {
           <h1 className="overview-filename">{investigation.filename}</h1>
           <p className="overview-id">Investigation {investigation.id.slice(0, 8)}</p>
         </div>
-        <span className={`status status-${investigation.status}`}>{investigation.status}</span>
+        <div className="overview-header-actions">
+          <span className={`status status-${investigation.status}`}>{investigation.status}</span>
+          <Link className="text-link" to={`/investigations/${id}/timeline`}>View timeline</Link>
+        </div>
       </header>
 
       {errors.length > 0 && <div className="overview-inline-errors" role="alert">{errors.map((error) => <p key={error}>{error}</p>)}</div>}

@@ -1,4 +1,4 @@
-import type { Detection, Flow, Host, InvestigationListResponse, InvestigationResponse } from '../types/api'
+import type { Detection, Flow, Host, InvestigationListResponse, InvestigationResponse, TimelineEvent } from '../types/api'
 
 const API_BASE = 'http://localhost:8000/api'
 
@@ -52,6 +52,11 @@ export async function getFlows(id: string): Promise<Flow[]> {
 export async function getDetections(id: string): Promise<Detection[]> {
   const response = await fetch(`${API_BASE}/investigations/${encodeURIComponent(id)}/detections`)
   return parseResponse<Detection[]>(response)
+}
+
+export async function getTimeline(id: string): Promise<TimelineEvent[]> {
+  const response = await fetch(`${API_BASE}/investigations/${encodeURIComponent(id)}/timeline`)
+  return parseResponse<TimelineEvent[]>(response)
 }
 
 export async function getDetection(id: string, detectionId: string): Promise<Detection> {

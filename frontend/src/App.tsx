@@ -8,6 +8,7 @@ import DetectionsPage from './pages/DetectionsPage'
 import DetectionDetailPage from './pages/DetectionDetailPage'
 import NotFoundPage from './pages/NotFoundPage'
 import UploadPage from './pages/UploadPage'
+import TimelinePage from './pages/TimelinePage'
 
 export function App() {
   return (
@@ -21,6 +22,7 @@ export function App() {
           <Route element={<FlowsPage />} path="/investigations/:id/flows" />
           <Route element={<DetectionsPage />} path="/investigations/:id/detections" />
           <Route element={<DetectionDetailPage />} path="/investigations/:id/detections/:detectionId" />
+          <Route element={<TimelinePage />} path="/investigations/:id/timeline" />
           <Route element={<InvestigationPlaceholder />} path="/investigations/:id/:section" />
           <Route element={<NotFoundPage />} path="*" />
         </Routes>
