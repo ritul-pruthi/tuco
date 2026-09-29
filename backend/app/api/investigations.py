@@ -5,6 +5,9 @@ from typing import Annotated
 
 from app.core.db import get_connection
 from app.core.storage import save_upload
+from app.detections.base import DetectionContext
+from app.detections.registry import build_default_engine
+from app.investigation.detections_repo import get_detections, save_detections
 from app.investigation.dns_repo import get_dns_records, save_dns_records
 from app.investigation.flows_repo import get_flows, save_flows
 from app.investigation.hosts_repo import get_hosts, save_hosts
@@ -14,6 +17,7 @@ from app.parsers.flow_aggregator import aggregate_flows
 from app.parsers.host_aggregator import aggregate_hosts
 from app.parsers.http_extractor import extract_http
 from app.parsers.pcap_parser import parse_pcap
+from app.schemas.detection import Detection
 from app.schemas.dns_record import DnsRecord
 from app.schemas.flow import Flow
 from app.schemas.host import Host
@@ -100,6 +104,15 @@ def create_investigation(file: Annotated[UploadFile, File()]):
             save_flows(conn, inv_id, flows)
             save_dns_records(conn, inv_id, dns_records)
             save_http_records(conn, inv_id, http_records)
+            detection_context = DetectionContext(
+                investigation_id=inv_id,
+                hosts=get_hosts(conn, inv_id),
+                flows=get_flows(conn, inv_id),
+                dns_records=get_dns_records(conn, inv_id),
+                http_records=get_http_records(conn, inv_id),
+            )
+            detections = build_default_engine().run(detection_context)
+            save_detections(conn, inv_id, detections)
             conn.execute(
                 "UPDATE investigations SET status = ? WHERE id = ?",
                 ("aggregated", inv_id),
@@ -208,3 +221,15 @@ def get_investigation_http(investigation_id: str):
         if inv is None:
             raise HTTPException(status_code=404, detail="Investigation not found")
         return get_http_records(conn, investigation_id)
+
+
+@router.get("/investigations/{investigation_id}/detections", response_model=list[Detection])
+def get_investigation_detections(investigation_id: str):
+    with get_connection() as conn:
+        inv = conn.execute(
+            "SELECT id FROM investigations WHERE id = ?",
+            (investigation_id,),
+        ).fetchone()
+        if inv is None:
+            raise HTTPException(status_code=404, detail="Investigation not found")
+        return get_detections(conn, investigation_id)

@@ -123,4 +123,42 @@ def init_db() -> None:
             ON http_records (investigation_id, host)
             """
         )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS detections (
+                id TEXT PRIMARY KEY,
+                investigation_id TEXT NOT NULL REFERENCES investigations(id),
+                rule_id TEXT NOT NULL,
+                title TEXT NOT NULL,
+                severity TEXT NOT NULL,
+                confidence TEXT NOT NULL,
+                source_ip TEXT NOT NULL,
+                source_port INTEGER,
+                destination_ip TEXT NOT NULL,
+                destination_port INTEGER,
+                timeframe_start TEXT NOT NULL,
+                timeframe_end TEXT NOT NULL,
+                observed_metric TEXT NOT NULL,
+                observed_value REAL NOT NULL,
+                threshold_description TEXT NOT NULL,
+                threshold_value REAL NOT NULL,
+                explanation TEXT NOT NULL,
+                evidence TEXT NOT NULL,
+                limitations TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_detections_investigation_rule
+            ON detections (investigation_id, rule_id)
+            """
+        )
+        conn.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_detections_investigation_severity
+            ON detections (investigation_id, severity)
+            """
+        )
         conn.commit()
