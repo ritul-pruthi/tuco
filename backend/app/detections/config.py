@@ -79,3 +79,12 @@ HTTP_SUSPICIOUS_PATH_SUBSTRINGS = [
 HTTP_INDICATOR_SEVERITY = "low"
 # Legitimate tools can produce these patterns, so confidence remains low.
 HTTP_INDICATOR_CONFIDENCE = "low"
+
+# Ten megabytes is an unusual amount of data for a single outbound flow.
+LARGE_OUTBOUND_MIN_BYTES = 10 * 1024 * 1024
+# Restrict this indicator to internal senders and external receivers.
+LARGE_OUTBOUND_INTERNAL_TO_EXTERNAL_ONLY = True
+# Large outbound transfers are noteworthy indicators, not proof of exfiltration.
+LARGE_OUTBOUND_SEVERITY = "medium"
+# Destination and payload context are needed to establish meaning.
+LARGE_OUTBOUND_CONFIDENCE = "low"
