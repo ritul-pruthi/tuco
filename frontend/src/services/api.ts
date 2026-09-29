@@ -1,4 +1,4 @@
-import type { InvestigationListResponse, InvestigationResponse } from '../types/api'
+import type { Detection, Host, InvestigationListResponse, InvestigationResponse } from '../types/api'
 
 const API_BASE = 'http://localhost:8000/api'
 
@@ -37,4 +37,14 @@ export async function uploadInvestigation(file: File): Promise<InvestigationResp
 export async function getInvestigation(id: string): Promise<InvestigationResponse> {
   const response = await fetch(`${API_BASE}/investigations/${encodeURIComponent(id)}`)
   return parseResponse<InvestigationResponse>(response)
+}
+
+export async function getHosts(id: string): Promise<Host[]> {
+  const response = await fetch(`${API_BASE}/investigations/${encodeURIComponent(id)}/hosts`)
+  return parseResponse<Host[]>(response)
+}
+
+export async function getDetections(id: string): Promise<Detection[]> {
+  const response = await fetch(`${API_BASE}/investigations/${encodeURIComponent(id)}/detections`)
+  return parseResponse<Detection[]>(response)
 }

@@ -1,0 +1,141 @@
+.overview-page {
+  max-width: 1280px;
+}
+
+.overview-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.overview-filename {
+  font-family: var(--font-mono);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  overflow-wrap: anywhere;
+}
+
+.overview-id {
+  margin-top: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.overview-header .status {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.metadata-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 28px 0 42px;
+}
+
+.metadata-grid div {
+  min-width: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.metadata-grid dt {
+  margin-bottom: 7px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.metadata-grid dd {
+  color: var(--text-primary);
+}
+
+.overview-sections {
+  display: grid;
+  gap: 42px;
+}
+
+.overview-section h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.overview-section .table-wrap {
+  margin-top: 16px;
+}
+
+.severity-summary {
+  display: flex;
+  gap: 14px;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.severity-text {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.severity-critical { color: var(--severity-critical); }
+.severity-high { color: var(--severity-high); }
+.severity-medium { color: var(--severity-medium); }
+.severity-low { color: var(--severity-low); }
+
+.overview-row {
+  cursor: pointer;
+}
+
+.overview-row:hover,
+.overview-row:focus-visible {
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.overview-state {
+  max-width: 760px;
+  padding-top: 20px;
+  color: var(--text-muted);
+}
+
+.overview-error h1 {
+  color: var(--text-primary);
+  font-size: 1.8rem;
+}
+
+.overview-inline-errors {
+  display: grid;
+  gap: 5px;
+  margin: 20px 0 -8px;
+  padding: 12px 14px;
+  border-left: 2px solid var(--severity-high);
+  color: var(--severity-high);
+  font-size: 0.85rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 560px) {
+  .overview-header {
+    display: grid;
+  }
+
+  .metadata-grid {
+    grid-template-columns: 1fr;
+  }
+}
