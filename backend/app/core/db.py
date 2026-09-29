@@ -186,4 +186,32 @@ def init_db() -> None:
             ON detections (investigation_id, severity)
             """
         )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS iocs (
+                id TEXT PRIMARY KEY,
+                investigation_id TEXT NOT NULL REFERENCES investigations(id),
+                ioc_type TEXT NOT NULL,
+                value TEXT NOT NULL,
+                first_seen TEXT NOT NULL,
+                last_seen TEXT NOT NULL,
+                occurrences INTEGER NOT NULL,
+                scope TEXT NOT NULL,
+                evidence_type TEXT NOT NULL,
+                evidence_ids TEXT NOT NULL
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_iocs_investigation_type
+            ON iocs (investigation_id, ioc_type)
+            """
+        )
+        conn.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_iocs_investigation_value
+            ON iocs (investigation_id, value)
+            """
+        )
         conn.commit()
