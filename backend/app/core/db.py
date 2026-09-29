@@ -214,4 +214,25 @@ def init_db() -> None:
             ON iocs (investigation_id, value)
             """
         )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS timeline_events (
+                id TEXT PRIMARY KEY,
+                investigation_id TEXT NOT NULL REFERENCES investigations(id),
+                timestamp TEXT NOT NULL,
+                event_type TEXT NOT NULL,
+                source TEXT NOT NULL,
+                destination TEXT NOT NULL,
+                summary TEXT NOT NULL,
+                evidence_type TEXT NOT NULL,
+                evidence_id TEXT NOT NULL
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_timeline_events_investigation_timestamp
+            ON timeline_events (investigation_id, timestamp)
+            """
+        )
         conn.commit()

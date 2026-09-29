@@ -13,6 +13,8 @@ from app.investigation.flows_repo import get_flows, save_flows
 from app.investigation.hosts_repo import get_hosts, save_hosts
 from app.investigation.http_repo import get_http_records, save_http_records
 from app.investigation.iocs_repo import get_iocs, save_iocs
+from app.investigation.timeline_builder import build_timeline
+from app.investigation.timeline_repo import get_timeline_events, save_timeline_events
 from app.investigation.tls_repo import get_tls_records, save_tls_records
 from app.ioc.extractor import extract_iocs
 from app.parsers.dns_extractor import extract_dns
@@ -28,6 +30,7 @@ from app.schemas.host import Host
 from app.schemas.http_record import HttpRecord
 from app.schemas.investigation import InvestigationResponse
 from app.schemas.ioc import Ioc
+from app.schemas.timeline_event import TimelineEvent
 from app.schemas.tls_record import TlsRecord
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
@@ -123,6 +126,8 @@ def create_investigation(file: Annotated[UploadFile, File()]):
             save_detections(conn, inv_id, detections)
             iocs = extract_iocs(conn, inv_id)
             save_iocs(conn, inv_id, iocs)
+            timeline_events = build_timeline(conn, inv_id)
+            save_timeline_events(conn, inv_id, timeline_events)
             conn.execute(
                 "UPDATE investigations SET status = ? WHERE id = ?",
                 ("aggregated", inv_id),
@@ -267,3 +272,15 @@ def get_investigation_iocs(investigation_id: str):
         if inv is None:
             raise HTTPException(status_code=404, detail="Investigation not found")
         return get_iocs(conn, investigation_id)
+
+
+@router.get("/investigations/{investigation_id}/timeline", response_model=list[TimelineEvent])
+def get_investigation_timeline(investigation_id: str):
+    with get_connection() as conn:
+        inv = conn.execute(
+            "SELECT id FROM investigations WHERE id = ?",
+            (investigation_id,),
+        ).fetchone()
+        if inv is None:
+            raise HTTPException(status_code=404, detail="Investigation not found")
+        return get_timeline_events(conn, investigation_id)

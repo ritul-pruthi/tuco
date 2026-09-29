@@ -29,6 +29,7 @@ HTTP records are exposed at `GET /api/investigations/{id}/http`.
 TLS metadata is exposed at `GET /api/investigations/{id}/tls`.
 Detections are exposed at `GET /api/investigations/{id}/detections`.
 IOCs are exposed at GET /api/investigations/{id}/iocs.
+The investigation timeline is exposed at GET /api/investigations/{id}/timeline.
 
 ### Upload Endpoint
 
