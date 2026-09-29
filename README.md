@@ -26,6 +26,7 @@ python -m pytest backend/tests/ -v
 ```
 DNS records are exposed at `GET /api/investigations/{id}/dns`.
 HTTP records are exposed at `GET /api/investigations/{id}/http`.
+TLS metadata is exposed at `GET /api/investigations/{id}/tls`.
 Detections are exposed at `GET /api/investigations/{id}/detections`.
 
 ### Upload Endpoint

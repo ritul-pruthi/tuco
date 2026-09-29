@@ -125,6 +125,31 @@ def init_db() -> None:
         )
         conn.execute(
             """
+            CREATE TABLE IF NOT EXISTS tls_records (
+                id TEXT PRIMARY KEY,
+                investigation_id TEXT NOT NULL REFERENCES investigations(id),
+                timestamp TEXT NOT NULL,
+                source_ip TEXT NOT NULL,
+                source_port INTEGER NOT NULL,
+                destination_ip TEXT NOT NULL,
+                destination_port INTEGER NOT NULL,
+                sni TEXT,
+                tls_version TEXT,
+                certificate_subject TEXT,
+                certificate_issuer TEXT,
+                certificate_not_before TEXT,
+                certificate_not_after TEXT
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_tls_records_investigation_sni
+            ON tls_records (investigation_id, sni)
+            """
+        )
+        conn.execute(
+            """
             CREATE TABLE IF NOT EXISTS detections (
                 id TEXT PRIMARY KEY,
                 investigation_id TEXT NOT NULL REFERENCES investigations(id),
