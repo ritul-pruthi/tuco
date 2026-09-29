@@ -12,6 +12,7 @@ from app.investigation.dns_repo import get_dns_records, save_dns_records
 from app.investigation.flows_repo import get_flows, save_flows
 from app.investigation.hosts_repo import get_hosts, save_hosts
 from app.investigation.http_repo import get_http_records, save_http_records
+from app.investigation.investigations_repo import get_investigation, list_investigations
 from app.investigation.iocs_repo import get_iocs, save_iocs
 from app.investigation.timeline_builder import build_timeline
 from app.investigation.timeline_repo import get_timeline_events, save_timeline_events
@@ -37,6 +38,30 @@ from fastapi import APIRouter, File, HTTPException, UploadFile
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+@router.get("/investigations")
+def list_investigation_records(limit: int = 100, offset: int = 0):
+    bounded_limit = max(1, min(limit, 500))
+    bounded_offset = max(0, offset)
+    with get_connection() as conn:
+        total = conn.execute("SELECT COUNT(*) FROM investigations").fetchone()[0]
+        items = list_investigations(conn, bounded_limit, bounded_offset)
+    return {
+        "items": items,
+        "total": total,
+        "limit": bounded_limit,
+        "offset": bounded_offset,
+    }
+
+
+@router.get("/investigations/{investigation_id}", response_model=InvestigationResponse)
+def get_investigation_record(investigation_id: str):
+    with get_connection() as conn:
+        investigation = get_investigation(conn, investigation_id)
+    if investigation is None:
+        raise HTTPException(status_code=404, detail="Investigation not found")
+    return investigation
 
 
 @router.post("/investigations", response_model=InvestigationResponse, status_code=201)
