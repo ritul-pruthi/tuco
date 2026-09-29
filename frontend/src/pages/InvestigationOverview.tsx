@@ -110,6 +110,7 @@ export function InvestigationOverview() {
         <div className="overview-header-actions">
           <span className={`status status-${investigation.status}`}>{investigation.status}</span>
           <Link className="text-link" to={`/investigations/${id}/timeline`}>View timeline</Link>
+          <Link className="text-link" to={`/investigations/${id}/iocs`}>View indicators</Link>
         </div>
       </header>
 

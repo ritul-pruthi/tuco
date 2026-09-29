@@ -51,6 +51,21 @@ export interface Flow {
   tcp_state: string | null
 }
 
+export type IocType = 'ipv4' | 'ipv6' | 'domain' | 'url' | 'user_agent'
+
+export interface Ioc {
+  id: string
+  investigation_id: string
+  ioc_type: IocType
+  value: string
+  first_seen: string
+  last_seen: string
+  occurrences: number
+  scope: string
+  evidence_type: 'host' | 'dns' | 'http' | 'flow' | 'mixed'
+  evidence_ids: string[]
+}
+
 export type Severity = 'low' | 'medium' | 'high' | 'critical'
 
 export interface Detection {

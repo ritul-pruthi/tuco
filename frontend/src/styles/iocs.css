@@ -1,0 +1,48 @@
+.ioc-sections {
+  display: grid;
+  gap: 34px;
+}
+
+.ioc-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ioc-table {
+  min-width: 820px;
+}
+
+.ioc-table .ioc-scope {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.ioc-scope-internal { color: var(--accent); }
+.ioc-scope-external { color: var(--severity-high); }
+.ioc-scope-unknown,
+.ioc-scope-n\/a,
+.ioc-muted-evidence { color: var(--text-muted); }
+
+.ioc-table td:first-child {
+  max-width: 520px;
+}
+
+.ioc-table td[title] {
+  max-width: 560px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ioc-user-agent {
+  max-width: 520px;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}

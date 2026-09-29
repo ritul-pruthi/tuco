@@ -9,6 +9,7 @@ import DetectionDetailPage from './pages/DetectionDetailPage'
 import NotFoundPage from './pages/NotFoundPage'
 import UploadPage from './pages/UploadPage'
 import TimelinePage from './pages/TimelinePage'
+import IocsPage from './pages/IocsPage'
 
 export function App() {
   return (
@@ -23,6 +24,7 @@ export function App() {
           <Route element={<DetectionsPage />} path="/investigations/:id/detections" />
           <Route element={<DetectionDetailPage />} path="/investigations/:id/detections/:detectionId" />
           <Route element={<TimelinePage />} path="/investigations/:id/timeline" />
+          <Route element={<IocsPage />} path="/investigations/:id/iocs" />
           <Route element={<InvestigationPlaceholder />} path="/investigations/:id/:section" />
           <Route element={<NotFoundPage />} path="*" />
         </Routes>
