@@ -10,7 +10,7 @@ from app.detections.dns_anomaly import DNSAnomalyDetector
 from app.main import app
 from app.schemas.dns_record import DnsRecord
 from fastapi.testclient import TestClient
-from scapy.all import DNS, DNSQR, Ether, IP, UDP, wrpcap
+from scapy.all import DNS, DNSQR, IP, UDP, Ether, wrpcap
 
 
 @pytest.fixture(autouse=True)

@@ -43,3 +43,39 @@ DNS_REPEATED_FAILURE_COUNT = 10
 DNS_ANOMALY_SEVERITY = "low"
 # DNS anomaly indicators have low confidence because legitimate software can produce them.
 DNS_ANOMALY_CONFIDENCE = "low"
+
+# Common scanner/tool user agents, case-insensitive match.
+HTTP_SUSPICIOUS_UA_SUBSTRINGS = [
+    "sqlmap",
+    "nikto",
+    "nmap",
+    "masscan",
+    "curl/",
+    "python-requests",
+    "wget",
+    "zgrab",
+    "gobuster",
+    "dirbuster",
+    "hydra",
+    "metasploit",
+]
+# Twenty HTTP errors in one minute indicates an unusually concentrated error burst.
+HTTP_HIGH_ERROR_RATE_COUNT = 20
+HTTP_HIGH_ERROR_RATE_WINDOW_SECONDS = 60
+# Case-insensitive substring match for paths commonly probed by scanners or attackers.
+HTTP_SUSPICIOUS_PATH_SUBSTRINGS = [
+    "/../",
+    "/etc/passwd",
+    "/.env",
+    "/wp-admin",
+    "/phpmyadmin",
+    "/.git",
+    "/admin",
+    "/shell",
+    "/cmd",
+    "/cgi-bin",
+]
+# HTTP indicators are low-severity observations requiring investigation.
+HTTP_INDICATOR_SEVERITY = "low"
+# Legitimate tools can produce these patterns, so confidence remains low.
+HTTP_INDICATOR_CONFIDENCE = "low"
