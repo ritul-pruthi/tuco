@@ -1,0 +1,130 @@
+.table-wrap {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  min-width: 980px;
+  border: 1px solid var(--border);
+  border-collapse: collapse;
+  background: var(--bg-surface);
+  font-size: 0.82rem;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.data-table th {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.data-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.data-table .technical,
+.data-table .mono {
+  font-family: var(--font-mono);
+}
+
+.data-table .numeric {
+  text-align: right;
+}
+
+.data-table .ip-link {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  text-decoration: none;
+}
+
+.data-table .ip-link:hover,
+.data-table .ip-link:focus-visible {
+  text-decoration: underline;
+}
+
+.protocol-tcp { color: var(--accent); }
+.protocol-udp { color: var(--severity-medium); }
+.protocol-icmp,
+.protocol-icmpv6 { color: var(--severity-high); }
+
+.detail-page {
+  max-width: 1440px;
+}
+
+.detail-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-header h1 {
+  font-size: 2rem;
+}
+
+.detail-subtitle {
+  margin-top: 9px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.detail-count {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.detail-content {
+  padding-top: 28px;
+}
+
+.detail-state {
+  padding-top: 20px;
+  color: var(--text-muted);
+}
+
+.detail-error {
+  color: var(--severity-high);
+}
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.text-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.text-link:hover,
+.text-link:focus-visible {
+  text-decoration: underline;
+}
+
+@media (max-width: 560px) {
+  .detail-header {
+    display: grid;
+    align-items: start;
+  }
+}

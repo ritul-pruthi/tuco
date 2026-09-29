@@ -34,6 +34,23 @@ export interface Host {
   last_seen: string
 }
 
+export interface Flow {
+  id: string
+  investigation_id: string
+  src_ip: string
+  src_port: number
+  dst_ip: string
+  dst_port: number
+  protocol: string
+  packets_sent: number
+  packets_received: number
+  bytes_sent: number
+  bytes_received: number
+  first_seen: string
+  last_seen: string
+  tcp_state: string | null
+}
+
 export type Severity = 'low' | 'medium' | 'high' | 'critical'
 
 export interface Detection {

@@ -154,6 +154,7 @@ export function InvestigationOverview() {
               <tbody>{visibleHosts.map((host) => <tr key={host.id}><td className="mono">{host.ip}</td><td>{host.scope}</td><td className="mono numeric">{formatNumber(host.packets_sent)}</td><td className="mono numeric">{formatNumber(host.packets_received)}</td><td className="mono">{formatTimestamp(host.first_seen)}</td></tr>)}</tbody>
             </table></div>
             {hosts.length > 10 && <Link className="text-link" to={`/investigations/${id}/hosts`}>Show all {hosts.length} hosts</Link>}
+            <Link className="text-link" to={`/investigations/${id}/connections`}>View all connections</Link>
           </>}
         </section>
       </div>
