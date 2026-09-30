@@ -16,6 +16,7 @@
   padding: 12px 14px;
   border-bottom: 1px solid var(--border);
   text-align: left;
+  vertical-align: middle;
   white-space: nowrap;
 }
 

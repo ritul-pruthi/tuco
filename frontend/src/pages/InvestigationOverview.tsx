@@ -136,11 +136,6 @@ export function InvestigationOverview() {
           <h1 className="overview-filename">{investigation.filename}</h1>
           <p className="overview-id">Investigation {investigation.id.slice(0, 8)}</p>
         </div>
-        <div className="overview-header-actions">
-          <span className={`status status-${investigation.status}`}>{investigation.status}</span>
-          <Link className="text-link" to={`/investigations/${id}/timeline`}>View timeline</Link>
-          <Link className="text-link" to={`/investigations/${id}/iocs`}>View indicators</Link>
-        </div>
       </header>
 
       {errors.length > 0 && <div className="overview-inline-errors" role="alert">{errors.map((error) => <p key={error}>{error}</p>)}</div>}
@@ -156,7 +151,6 @@ export function InvestigationOverview() {
           <div><dt>Last packet</dt><dd className="mono">{formatTimestamp(investigation.ended_at)}</dd></div>
           <div><dt>Uploaded</dt><dd className="mono">{formatTimestamp(investigation.created_at)}</dd></div>
         </dl>
-        {timelineCount > 0 && <Link className="overview-secondary-link" to={`/investigations/${id}/timeline`}>View full timeline ({timelineCount} events)</Link>}
       </section>
 
       <div className="overview-sections">
@@ -173,7 +167,7 @@ export function InvestigationOverview() {
               <div className="table-wrap"><table>
                 <thead><tr><th>Title</th><th>Severity</th><th>Source</th><th>Destination</th><th>Observed metric</th><th>Evidence</th></tr></thead>
                 <tbody>{detections.map((detection) => <tr className="overview-row" key={detection.id} onClick={() => navigate(`/investigations/${id}/detections/${detection.id}`)} tabIndex={0} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') navigate(`/investigations/${id}/detections/${detection.id}`) }}>
-                  <td><Link className="text-link" onClick={(event) => event.stopPropagation()} to={`/investigations/${id}/detections/${detection.id}`}>{detection.title}</Link></td><td><span className={`severity-text severity-${detection.severity}`}>{detection.severity}</span></td><td className="mono">{detection.source_ip}</td><td className="mono">{detection.destination_ip}</td><td className="mono numeric">{detection.observed_metric}</td><td><Link className="text-link" onClick={(event) => event.stopPropagation()} to={`/investigations/${id}/detections/${detection.id}`}>View Evidence</Link></td>
+                  <td><Link className="text-link" onClick={(event) => event.stopPropagation()} to={`/investigations/${id}/detections/${detection.id}`}>{detection.title}</Link></td><td><span className={`severity-text severity-${detection.severity}`}>{detection.severity}</span></td><td className="mono">{detection.source_ip}</td><td className="mono">{detection.destination_ip}</td><td className="mono">{detection.observed_metric}</td><td><Link className="text-link" onClick={(event) => event.stopPropagation()} to={`/investigations/${id}/detections/${detection.id}`}>View Evidence</Link></td>
                 </tr>)}</tbody>
               </table></div>
             </div>
@@ -202,6 +196,7 @@ export function InvestigationOverview() {
           </table></div>
           <Link className="overview-secondary-link" to={`/investigations/${id}/iocs`}>View all observables</Link>
         </section>}
+        {timelineCount > 0 && <Link className="overview-secondary-link overview-timeline-link" to={`/investigations/${id}/timeline`}>View full timeline{' '}({timelineCount} events)</Link>}
       </div>
     </div>
   )

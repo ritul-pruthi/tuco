@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 
-const sections = ['Overview', 'Hosts', 'Connections', 'DNS', 'HTTP', 'TLS', 'Detections', 'Timeline', 'IOCs', 'Evidence']
+const sections = ['Overview', 'Hosts', 'Connections', 'DNS', 'HTTP', 'TLS', 'Detections', 'Timeline', 'Observables', 'Evidence']
 
 interface LayoutProps {
   children: ReactNode
@@ -17,7 +17,7 @@ export function Layout({ children }: LayoutProps) {
         <NavLink className="brand" to="/">TUCO</NavLink>
         <nav aria-label="Investigation sections">
           {sections.map((section) => {
-            const path = section === 'Overview' ? '' : `/${section.toLowerCase()}`
+            const path = section === 'Overview' ? '' : section === 'Observables' ? '/iocs' : `/${section.toLowerCase()}`
             return (
               <NavLink
                 className={({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')}

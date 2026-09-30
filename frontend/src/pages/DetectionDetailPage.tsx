@@ -35,6 +35,7 @@ export function DetectionDetailPage() {
   const { id = '', detectionId = '' } = useParams<{ id: string; detectionId: string }>()
   const [detection, setDetection] = useState<Detection | null>(null)
   const [evidence, setEvidence] = useState<LoadedEvidence[]>([])
+  const [showAllEvidence, setShowAllEvidence] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -44,7 +45,7 @@ export function DetectionDetailPage() {
       .then(async (loadedDetection) => {
         if (!isMounted) return
         setDetection(loadedDetection)
-        const references = loadedDetection.evidence.slice(0, 20).map(asEvidenceReference).filter((reference): reference is EvidenceReference => reference !== null)
+        const references = loadedDetection.evidence.map(asEvidenceReference).filter((reference): reference is EvidenceReference => reference !== null)
         const loadedEvidence = await Promise.all(references.map(async (reference): Promise<LoadedEvidence> => {
           try {
             if (reference.type === 'flow') return { reference, flow: await getFlow(id, reference.id) }
@@ -64,7 +65,7 @@ export function DetectionDetailPage() {
   if (isLoading) return <p className="detail-state">Loading detection...</p>
   if (error || !detection) return <section className="detail-state detail-error"><h1>Detection not found</h1><p>{error}</p><Link className="text-link" to={`/investigations/${id}/detections`}>Back to detections</Link></section>
 
-  const references = detection.evidence.slice(0, 20)
+  const visibleEvidence = showAllEvidence ? evidence : evidence.slice(0, 50)
   return (
     <div className="detail-page detection-detail-page">
       <header className="detail-header"><div><p className="eyebrow">Detection detail</p><h1>{detection.title}</h1><p className="detail-subtitle mono">{detection.rule_id}</p></div><span className={`severity-badge severity-${detection.severity}`}>{detection.severity}</span></header>
@@ -78,8 +79,7 @@ export function DetectionDetailPage() {
       </section>
       <section className="evidence-section" aria-labelledby="evidence-heading">
         <div className="section-heading"><h2 id="evidence-heading">Evidence <span className="record-count">{detection.evidence.length}</span></h2></div>
-        {detection.evidence.length > 20 && <p className="evidence-cap">Showing 20 of {detection.evidence.length} evidence items.</p>}
-        {references.length === 0 ? <p className="detail-state">No evidence references were recorded.</p> : <div className="evidence-list">{evidence.map(({ reference, flow, host, error: evidenceError }) => (
+        {visibleEvidence.length === 0 ? <p className="detail-state">No evidence references were recorded.</p> : <div className="evidence-list">{visibleEvidence.map(({ reference, flow, host, error: evidenceError }) => (
           <article className="evidence-item" key={`${reference.type}-${reference.id}`}>
             <div className="evidence-item-header"><span className="severity-badge evidence-type">{reference.type}</span><span className="mono">{reference.id}</span></div>
             {flow && <p className="mono">{formatEndpoint(flow.src_ip, flow.src_port)} -&gt; {formatEndpoint(flow.dst_ip, flow.dst_port)} · {flow.protocol} · {flow.packets_sent + flow.packets_received} packets · {formatBytes(flow.bytes_sent + flow.bytes_received)}</p>}
@@ -90,6 +90,7 @@ export function DetectionDetailPage() {
             {host && <Link className="text-link" to={`/investigations/${id}/hosts`}>View host</Link>}
           </article>
         ))}</div>}
+        {detection.evidence.length > 50 && <button className="evidence-toggle" type="button" aria-expanded={showAllEvidence} onClick={() => setShowAllEvidence((isExpanded) => !isExpanded)}>{showAllEvidence ? `Show first 50` : `Show all ${detection.evidence.length}`}</button>}
       </section>
       <section className="related-section" aria-labelledby="related-heading"><h2 id="related-heading">Related</h2><div className="related-links"><Link to={`/investigations/${id}/connections?host=${encodeURIComponent(detection.source_ip)}`}>All connections for {detection.source_ip}</Link><Link to={`/investigations/${id}/timeline`}>Timeline</Link><Link to={`/investigations/${id}/detections`}>Back to detections</Link></div></section>
     </div>

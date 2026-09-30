@@ -77,6 +77,20 @@
   margin-top: 16px;
 }
 
+.detection-summary table th,
+.detection-summary table td {
+  vertical-align: middle;
+}
+
+.detection-summary table td {
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.detection-summary .text-link {
+  margin-top: 0;
+}
+
 .overview-secondary-link {
   display: inline-block;
   margin-top: 12px;
@@ -143,7 +157,8 @@
 
 .severity-text {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: inherit;
+  line-height: inherit;
 }
 
 .severity-critical { color: var(--severity-critical); }
