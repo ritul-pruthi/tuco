@@ -78,6 +78,22 @@ export interface HttpRecord {
   status_code: number | null
 }
 
+export interface TlsRecord {
+  id: string
+  investigation_id: string
+  timestamp: string
+  source_ip: string
+  source_port: number
+  destination_ip: string
+  destination_port: number
+  sni: string | null
+  tls_version: string | null
+  certificate_subject: string | null
+  certificate_issuer: string | null
+  certificate_not_before: string | null
+  certificate_not_after: string | null
+}
+
 export type IocType = 'ipv4' | 'ipv6' | 'domain' | 'url' | 'user_agent'
 
 export interface Ioc {

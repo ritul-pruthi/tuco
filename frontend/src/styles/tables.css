@@ -50,6 +50,12 @@
   text-align: right;
 }
 
+.tls-table .tls-port-column,
+.tls-table .tls-certificate-column,
+.tls-table .tls-issuer-column {
+  text-align: center;
+}
+
 .data-table .truncate {
   max-width: 280px;
   overflow: hidden;

@@ -58,7 +58,7 @@ npm run test -- --run
 ```
 
 Open http://localhost:5173. Backend must be running at http://localhost:8000. Upload a PCAP at `/` - the app calls the backend and lists recent investigations.
-Investigation detail views are available at `/investigations/{id}/hosts`, `/investigations/{id}/connections` (also `/flows`), `/investigations/{id}/dns`, `/investigations/{id}/http`, `/investigations/{id}/timeline`, and `/investigations/{id}/iocs`.
+Investigation detail views are available at `/investigations/{id}/hosts`, `/investigations/{id}/connections` (also `/flows`), `/investigations/{id}/dns`, `/investigations/{id}/http`, `/investigations/{id}/tls`, `/investigations/{id}/timeline`, and `/investigations/{id}/iocs`.
 
 ## License
 

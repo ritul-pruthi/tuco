@@ -1,7 +1,17 @@
 import type { ReactNode } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 
-const sections = ['Overview', 'Hosts', 'Connections', 'DNS', 'HTTP', 'TLS', 'Detections', 'Timeline', 'Observables', 'Evidence']
+const sections = [
+  { label: 'Overview', path: '' },
+  { label: 'Hosts', path: '/hosts' },
+  { label: 'Connections', path: '/connections' },
+  { label: 'DNS', path: '/dns' },
+  { label: 'HTTP', path: '/http' },
+  { label: 'TLS', path: '/tls' },
+  { label: 'Detections', path: '/detections' },
+  { label: 'Timeline', path: '/timeline' },
+  { label: 'Observables', path: '/iocs' },
+]
 
 interface LayoutProps {
   children: ReactNode
@@ -17,15 +27,14 @@ export function Layout({ children }: LayoutProps) {
         <NavLink className="brand" to="/">TUCO</NavLink>
         <nav aria-label="Investigation sections">
           {sections.map((section) => {
-            const path = section === 'Overview' ? '' : section === 'Observables' ? '/iocs' : `/${section.toLowerCase()}`
             return (
               <NavLink
                 className={({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')}
-                key={section}
-                to={id ? `/investigations/${id}${path}` : '/'}
-                end={section === 'Overview'}
+                key={section.label}
+                to={id ? `/investigations/${id}${section.path}` : '/'}
+                end={section.label === 'Overview'}
               >
-                {section}
+                {section.label}
               </NavLink>
             )
           })}
