@@ -51,6 +51,18 @@ export interface Flow {
   tcp_state: string | null
 }
 
+export interface DnsRecord {
+  id: string
+  investigation_id: string
+  timestamp: string
+  source_ip: string
+  destination_ip: string
+  query: string
+  query_type: string
+  response_code: number
+  answers: string[]
+}
+
 export type IocType = 'ipv4' | 'ipv6' | 'domain' | 'url' | 'user_agent'
 
 export interface Ioc {

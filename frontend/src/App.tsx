@@ -10,6 +10,7 @@ import NotFoundPage from './pages/NotFoundPage'
 import UploadPage from './pages/UploadPage'
 import TimelinePage from './pages/TimelinePage'
 import IocsPage from './pages/IocsPage'
+import DnsPage from './pages/DnsPage'
 
 export function App() {
   return (
@@ -21,6 +22,7 @@ export function App() {
           <Route element={<HostsPage />} path="/investigations/:id/hosts" />
           <Route element={<FlowsPage />} path="/investigations/:id/connections" />
           <Route element={<FlowsPage />} path="/investigations/:id/flows" />
+          <Route element={<DnsPage />} path="/investigations/:id/dns" />
           <Route element={<DetectionsPage />} path="/investigations/:id/detections" />
           <Route element={<DetectionDetailPage />} path="/investigations/:id/detections/:detectionId" />
           <Route element={<TimelinePage />} path="/investigations/:id/timeline" />

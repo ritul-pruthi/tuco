@@ -1,4 +1,4 @@
-import type { Detection, Flow, Host, Ioc, InvestigationListResponse, InvestigationResponse, TimelineEvent } from '../types/api'
+import type { Detection, DnsRecord, Flow, Host, Ioc, InvestigationListResponse, InvestigationResponse, TimelineEvent } from '../types/api'
 
 const API_BASE = 'http://localhost:8000/api'
 
@@ -47,6 +47,11 @@ export async function getHosts(id: string): Promise<Host[]> {
 export async function getFlows(id: string): Promise<Flow[]> {
   const response = await fetch(`${API_BASE}/investigations/${encodeURIComponent(id)}/flows`)
   return parseResponse<Flow[]>(response)
+}
+
+export async function getDns(id: string): Promise<DnsRecord[]> {
+  const response = await fetch(`${API_BASE}/investigations/${encodeURIComponent(id)}/dns`)
+  return parseResponse<DnsRecord[]>(response)
 }
 
 export async function getDetections(id: string): Promise<Detection[]> {

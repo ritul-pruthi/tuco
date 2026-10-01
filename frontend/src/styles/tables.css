@@ -118,6 +118,46 @@
   font-size: 0.82rem;
 }
 
+.dns-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.dns-filters label {
+  display: grid;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dns-filters input,
+.dns-filters select {
+  min-height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 7px 9px;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.dns-filters input {
+  min-width: 250px;
+}
+
+.dns-filters input:focus-visible,
+.dns-filters select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .text-link {
   color: var(--accent);
   text-decoration: none;
