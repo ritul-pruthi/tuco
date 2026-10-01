@@ -63,6 +63,21 @@ export interface DnsRecord {
   answers: string[]
 }
 
+export interface HttpRecord {
+  id: string
+  investigation_id: string
+  timestamp: string
+  source_ip: string
+  source_port: number
+  destination_ip: string
+  destination_port: number
+  method: string
+  host: string | null
+  path: string | null
+  user_agent: string | null
+  status_code: number | null
+}
+
 export type IocType = 'ipv4' | 'ipv6' | 'domain' | 'url' | 'user_agent'
 
 export interface Ioc {

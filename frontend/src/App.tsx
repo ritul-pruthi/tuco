@@ -11,6 +11,7 @@ import UploadPage from './pages/UploadPage'
 import TimelinePage from './pages/TimelinePage'
 import IocsPage from './pages/IocsPage'
 import DnsPage from './pages/DnsPage'
+import HttpPage from './pages/HttpPage'
 
 export function App() {
   return (
@@ -23,6 +24,7 @@ export function App() {
           <Route element={<FlowsPage />} path="/investigations/:id/connections" />
           <Route element={<FlowsPage />} path="/investigations/:id/flows" />
           <Route element={<DnsPage />} path="/investigations/:id/dns" />
+          <Route element={<HttpPage />} path="/investigations/:id/http" />
           <Route element={<DetectionsPage />} path="/investigations/:id/detections" />
           <Route element={<DetectionDetailPage />} path="/investigations/:id/detections/:detectionId" />
           <Route element={<TimelinePage />} path="/investigations/:id/timeline" />
