@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { getTls } from '../services/api'
 import type { TlsRecord } from '../types/api'
 
@@ -15,6 +15,8 @@ function displayValue(value: string | null | undefined, fallback = '—'): strin
 
 export function TlsPage() {
   const { id = '' } = useParams<{ id: string }>()
+  const [searchParams] = useSearchParams()
+  const recordId = searchParams.get('record')
   const [records, setRecords] = useState<TlsRecord[]>([])
   const [search, setSearch] = useState('')
   const [version, setVersion] = useState('all')
@@ -48,7 +50,7 @@ export function TlsPage() {
       record.certificate_subject,
       record.certificate_issuer,
     ].filter((value): value is string => value !== null && value !== undefined).some((value) => value.toLowerCase().includes(searchText))
-    return matchesSearch && (version === 'all' || record.tls_version === version) && (sni === 'all' || record.sni === sni) && (destination === 'all' || record.destination_ip === destination)
+    return (!recordId || record.id === recordId) && matchesSearch && (version === 'all' || record.tls_version === version) && (sni === 'all' || record.sni === sni) && (destination === 'all' || record.destination_ip === destination)
   })
 
   return (

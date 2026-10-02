@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { getHttp } from '../services/api'
 import type { HttpRecord } from '../types/api'
 
@@ -15,6 +15,8 @@ function displayValue(value: string | null, fallback = '—'): string {
 
 export function HttpPage() {
   const { id = '' } = useParams<{ id: string }>()
+  const [searchParams] = useSearchParams()
+  const recordId = searchParams.get('record')
   const [records, setRecords] = useState<HttpRecord[]>([])
   const [search, setSearch] = useState('')
   const [method, setMethod] = useState('all')
@@ -40,7 +42,7 @@ export function HttpPage() {
     const matchesSearch = !searchText || [record.source_ip, record.destination_ip, record.method, record.host, record.path, record.user_agent]
       .filter((value): value is string => value !== null)
       .some((value) => value.toLowerCase().includes(searchText))
-    return matchesSearch && (method === 'all' || record.method === method) && (statusCode === 'all' || String(record.status_code) === statusCode) && (host === 'all' || record.host === host)
+    return (!recordId || record.id === recordId) && matchesSearch && (method === 'all' || record.method === method) && (statusCode === 'all' || String(record.status_code) === statusCode) && (host === 'all' || record.host === host)
   })
 
   return (

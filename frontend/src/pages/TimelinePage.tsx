@@ -13,10 +13,6 @@ function formatTimestamp(value: string): string {
   return date.toISOString().slice(0, 19).replace('T', ' ')
 }
 
-function shortId(value: string): string {
-  return value.slice(0, 8)
-}
-
 function eventTypeLabel(eventType: EventType): string {
   return eventType.replaceAll('_', ' ')
 }
@@ -33,7 +29,9 @@ function matchesFilter(event: TimelineEvent, filter: TimelineFilter): boolean {
 function evidenceLink(id: string, event: TimelineEvent): string | null {
   if (event.evidence_type === 'host') return `/investigations/${id}/hosts`
   if (event.evidence_type === 'flow') return `/investigations/${id}/connections`
-  if (event.evidence_type === 'http') return `/investigations/${id}/http`
+  if (event.evidence_type === 'dns') return `/investigations/${id}/dns?record=${encodeURIComponent(event.evidence_id)}`
+  if (event.evidence_type === 'http') return `/investigations/${id}/http?record=${encodeURIComponent(event.evidence_id)}`
+  if (event.evidence_type === 'tls') return `/investigations/${id}/tls?record=${encodeURIComponent(event.evidence_id)}`
   if (event.evidence_type === 'detection') return `/investigations/${id}/detections/${event.evidence_id}`
   return null
 }
@@ -42,7 +40,10 @@ function evidenceLabel(event: TimelineEvent): string {
   if (event.evidence_type === 'host') return 'View host evidence'
   if (event.evidence_type === 'flow') return 'View flow evidence'
   if (event.evidence_type === 'detection') return 'View detection evidence'
-  return `${event.evidence_type.toUpperCase()} record ${shortId(event.evidence_id)}`
+  if (event.evidence_type === 'dns') return 'View DNS evidence'
+  if (event.evidence_type === 'http') return 'View HTTP evidence'
+  if (event.evidence_type === 'tls') return 'View TLS evidence'
+  return 'View evidence'
 }
 
 export function TimelinePage() {

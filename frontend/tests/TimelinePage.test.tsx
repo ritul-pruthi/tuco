@@ -8,6 +8,7 @@ const events = [
   { id: 'event-2', investigation_id: 'abc12345', timestamp: '2026-09-30T10:01:00Z', event_type: 'dns_query', source: '10.0.0.5', destination: '8.8.8.8', summary: 'DNS query for example.com', evidence_type: 'dns', evidence_id: 'dns-12345678' },
   { id: 'event-1', investigation_id: 'abc12345', timestamp: '2026-09-30T10:00:00Z', event_type: 'host_first_seen', source: '10.0.0.5', destination: null, summary: 'Host first seen', evidence_type: 'host', evidence_id: 'host-1' },
   { id: 'event-3', investigation_id: 'abc12345', timestamp: '2026-09-30T10:02:00Z', event_type: 'detection', source: '10.0.0.5', destination: '10.0.0.15', summary: 'Internal reconnaissance detected', evidence_type: 'detection', evidence_id: 'det-42' },
+  { id: 'event-tls', investigation_id: 'abc12345', timestamp: '2026-09-30T10:04:00Z', event_type: 'tls_handshake', source: '10.0.0.5', destination: 'example.com', summary: 'TLS handshake', evidence_type: 'tls', evidence_id: 'tls-1' },
 ]
 
 const httpEvent = {
@@ -71,7 +72,21 @@ describe('TimelinePage', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [httpEvent] }))
     renderPage()
     await screen.findByText(httpEvent.summary)
-    expect(screen.getByRole('link', { name: 'HTTP record http-1' })).toHaveAttribute('href', '/investigations/abc12345/http')
+    expect(screen.getByRole('link', { name: 'View HTTP evidence' })).toHaveAttribute('href', '/investigations/abc12345/http?record=http-1')
+  })
+
+  it('links DNS evidence to the matching DNS record', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [events[0]] }))
+    renderPage()
+    await screen.findByText('DNS query for example.com')
+    expect(screen.getByRole('link', { name: 'View DNS evidence' })).toHaveAttribute('href', '/investigations/abc12345/dns?record=dns-12345678')
+  })
+
+  it('links TLS evidence to the matching TLS record', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [events[3]] }))
+    renderPage()
+    await screen.findByText('TLS handshake')
+    expect(screen.getByRole('link', { name: 'View TLS evidence' })).toHaveAttribute('href', '/investigations/abc12345/tls?record=tls-1')
   })
 
   it('keeps long HTTP request text in the timeline content', async () => {
@@ -83,10 +98,10 @@ describe('TimelinePage', () => {
   })
 
   it('does not create an evidence link for an unsupported event reference', async () => {
-    const eventWithoutEvidence = { ...httpEvent, evidence_type: 'dns' }
+    const eventWithoutEvidence = { ...httpEvent, evidence_type: 'unsupported' }
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [eventWithoutEvidence] }))
     renderPage()
     await screen.findByText(eventWithoutEvidence.summary)
-    expect(screen.queryByRole('link', { name: /DNS record/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /record/ })).not.toBeInTheDocument()
   })
 })

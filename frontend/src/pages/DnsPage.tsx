@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { getDns } from '../services/api'
 import type { DnsRecord } from '../types/api'
 
@@ -15,6 +15,8 @@ function formatAnswers(answers: string[]): string {
 
 export function DnsPage() {
   const { id = '' } = useParams<{ id: string }>()
+  const [searchParams] = useSearchParams()
+  const recordId = searchParams.get('record')
   const [records, setRecords] = useState<DnsRecord[]>([])
   const [search, setSearch] = useState('')
   const [queryType, setQueryType] = useState('all')
@@ -37,7 +39,7 @@ export function DnsPage() {
     const searchText = search.trim().toLowerCase()
     const matchesSearch = !searchText || [record.source_ip, record.destination_ip, record.query, record.query_type, ...record.answers]
       .some((value) => value.toLowerCase().includes(searchText))
-    return matchesSearch && (queryType === 'all' || record.query_type === queryType) && (responseCode === 'all' || String(record.response_code) === responseCode)
+    return (!recordId || record.id === recordId) && matchesSearch && (queryType === 'all' || record.query_type === queryType) && (responseCode === 'all' || String(record.response_code) === responseCode)
   })
 
   return (
