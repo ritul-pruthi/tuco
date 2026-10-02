@@ -54,10 +54,10 @@ export function DnsPage() {
         </div>
         {isLoading ? <p className="detail-state">Loading DNS records...</p> : error ? <p className="detail-state detail-error" role="alert">Unable to load DNS records. {error}</p> : visibleRecords.length === 0 ? <p className="detail-state">No DNS records found in this capture.</p> : (
           <div className="table-wrap"><table className="data-table dns-table">
-            <thead><tr><th>Timestamp</th><th>Source</th><th>Destination</th><th>Query</th><th>Type</th><th>Response</th><th>Answers</th></tr></thead>
+            <thead><tr><th>Timestamp</th><th>Source</th><th>Destination</th><th>Query</th><th className="type-center">Type</th><th className="response-center">Response</th><th>Answers</th></tr></thead>
             <tbody>{visibleRecords.map((record) => <tr key={record.id}>
               <td className="mono">{formatTimestamp(record.timestamp)}</td><td className="mono">{record.source_ip}</td><td className="mono">{record.destination_ip}</td>
-              <td className="mono">{record.query}</td><td className="mono">{record.query_type}</td><td className="mono numeric">{record.response_code}</td><td className="mono">{formatAnswers(record.answers)}</td>
+              <td className="mono">{record.query}</td><td className="mono type-center">{record.query_type}</td><td className="mono response-center">{record.response_code}</td><td className="mono">{formatAnswers(record.answers)}</td>
             </tr>)}</tbody>
           </table></div>
         )}

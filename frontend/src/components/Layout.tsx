@@ -25,20 +25,18 @@ export function Layout({ children }: LayoutProps) {
     <div className="app-shell">
       <aside className="sidebar">
         <NavLink className="brand" to="/">TUCO</NavLink>
-        <nav aria-label="Investigation sections">
-          {sections.map((section) => {
-            return (
-              <NavLink
-                className={({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')}
-                key={section.label}
-                to={id ? `/investigations/${id}${section.path}` : '/'}
-                end={section.label === 'Overview'}
-              >
-                {section.label}
-              </NavLink>
-            )
-          })}
-        </nav>
+        {id && <nav aria-label="Investigation sections">
+          {sections.map((section) => (
+            <NavLink
+              className={({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')}
+              key={section.label}
+              to={`/investigations/${id}${section.path}`}
+              end={section.label === 'Overview'}
+            >
+              {section.label}
+            </NavLink>
+          ))}
+        </nav>}
       </aside>
       <main className="main-content">{children}</main>
     </div>

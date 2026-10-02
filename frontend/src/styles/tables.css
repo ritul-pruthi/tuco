@@ -50,6 +50,26 @@
   text-align: right;
 }
 
+.data-table .numeric-center,
+.data-table .protocol-center,
+.data-table .type-center,
+.data-table .response-center,
+.data-table .occurrence-center,
+.data-table .method-center,
+.data-table .host-center,
+.data-table .path-center {
+  text-align: center;
+}
+
+.overview-hosts-table .numeric-center,
+.overview-observables-table .numeric-center {
+  text-align: center;
+}
+
+.http-table .host-center {
+  padding-inline: 22px;
+}
+
 .tls-table .tls-port-column,
 .tls-table .tls-certificate-column,
 .tls-table .tls-issuer-column {

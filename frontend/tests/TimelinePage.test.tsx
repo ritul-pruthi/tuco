@@ -10,6 +10,18 @@ const events = [
   { id: 'event-3', investigation_id: 'abc12345', timestamp: '2026-09-30T10:02:00Z', event_type: 'detection', source: '10.0.0.5', destination: '10.0.0.15', summary: 'Internal reconnaissance detected', evidence_type: 'detection', evidence_id: 'det-42' },
 ]
 
+const httpEvent = {
+  id: 'event-http',
+  investigation_id: 'abc12345',
+  timestamp: '2026-09-30T10:03:00Z',
+  event_type: 'http_request',
+  source: '10.0.0.5',
+  destination: 'example.com',
+  summary: `GET /${'a'.repeat(240)} → 200`,
+  evidence_type: 'http',
+  evidence_id: 'http-1',
+}
+
 function renderPage() {
   return render(<MemoryRouter initialEntries={['/investigations/abc12345/timeline']}><Routes><Route path="/investigations/:id/timeline" element={<TimelinePage />} /></Routes></MemoryRouter>)
 }
@@ -53,5 +65,28 @@ describe('TimelinePage', () => {
     renderPage()
     await screen.findByText('Internal reconnaissance detected')
     expect(screen.getByRole('link', { name: 'View detection evidence' })).toHaveAttribute('href', '/investigations/abc12345/detections/det-42')
+  })
+
+  it('links HTTP evidence to the existing HTTP investigation view', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [httpEvent] }))
+    renderPage()
+    await screen.findByText(httpEvent.summary)
+    expect(screen.getByRole('link', { name: 'HTTP record http-1' })).toHaveAttribute('href', '/investigations/abc12345/http')
+  })
+
+  it('keeps long HTTP request text in the timeline content', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [httpEvent] }))
+    renderPage()
+    const summary = await screen.findByText(httpEvent.summary)
+    expect(summary.parentElement).toHaveClass('timeline-content')
+    expect(summary).toHaveTextContent(httpEvent.summary)
+  })
+
+  it('does not create an evidence link for an unsupported event reference', async () => {
+    const eventWithoutEvidence = { ...httpEvent, evidence_type: 'dns' }
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [eventWithoutEvidence] }))
+    renderPage()
+    await screen.findByText(eventWithoutEvidence.summary)
+    expect(screen.queryByRole('link', { name: /DNS record/ })).not.toBeInTheDocument()
   })
 })

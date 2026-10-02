@@ -71,6 +71,13 @@ describe('IocsPage', () => {
     expect(screen.queryByRole('link', { name: 'mixed sources' })).not.toBeInTheDocument()
   })
 
+  it('links a single HTTP evidence source and leaves mixed sources non-clickable', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [iocs[3], iocs[2]] }))
+    renderPage()
+    expect(await screen.findByRole('link', { name: 'HTTP record' })).toHaveAttribute('href', '/investigations/abc12345/http')
+    expect(screen.getByText('mixed sources')).not.toHaveAttribute('href')
+  })
+
   it('renders the empty state', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [] }))
     renderPage()

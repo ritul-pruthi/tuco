@@ -58,10 +58,10 @@ export function HttpPage() {
         </div>
         {isLoading ? <p className="detail-state">Loading HTTP records...</p> : error ? <p className="detail-state detail-error" role="alert">Unable to load HTTP records. {error}</p> : visibleRecords.length === 0 ? <p className="detail-state">No HTTP records found in this capture.</p> : (
           <div className="table-wrap"><table className="data-table http-table">
-            <thead><tr><th>Timestamp</th><th>Source</th><th>Destination</th><th>Method</th><th>Host</th><th>Path</th><th>Status</th><th>User Agent</th></tr></thead>
+            <thead><tr><th>Timestamp</th><th>Source</th><th>Destination</th><th className="method-center">Method</th><th className="host-center">Host</th><th className="path-center">Path</th><th>Status</th><th>User Agent</th></tr></thead>
             <tbody>{visibleRecords.map((record) => <tr key={record.id}>
               <td className="mono">{formatTimestamp(record.timestamp)}</td><td className="mono">{record.source_ip}:{record.source_port}</td><td className="mono">{record.destination_ip}:{record.destination_port}</td>
-              <td className="mono">{record.method}</td><td className="mono truncate" title={displayValue(record.host)}>{displayValue(record.host)}</td><td className="mono truncate" title={displayValue(record.path)}>{displayValue(record.path)}</td>
+              <td className="mono method-center">{record.method}</td><td className="mono truncate host-center" title={displayValue(record.host)}>{displayValue(record.host)}</td><td className="mono truncate path-center" title={displayValue(record.path)}>{displayValue(record.path)}</td>
               <td className="mono numeric">{record.status_code ?? '—'}</td><td className="mono truncate" title={displayValue(record.user_agent)}>{displayValue(record.user_agent)}</td>
             </tr>)}</tbody>
           </table></div>

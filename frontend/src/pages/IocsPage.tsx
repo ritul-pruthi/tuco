@@ -22,6 +22,7 @@ function formatNumber(value: number): string {
 }
 
 function evidenceLink(id: string, ioc: Ioc): string | null {
+  if (ioc.evidence_ids.length !== 1) return null
   if (ioc.evidence_type === 'host') return `/investigations/${id}/hosts`
   if (ioc.evidence_type === 'flow') return `/investigations/${id}/connections`
   if (ioc.evidence_type === 'dns') return `/investigations/${id}/dns`
@@ -57,7 +58,7 @@ function IocTable({ id, iocs, type }: { id: string; iocs: Ioc[]; type: IocType }
         <thead><tr>
           <th>Value</th>
           {showScope && <th>Scope</th>}
-          <th className="numeric">Occurrences</th>
+          <th className="occurrence-center">Occurrences</th>
           <th>First seen</th>
           {showLastSeen && <th>Last seen</th>}
           <th>Evidence</th>
@@ -68,7 +69,7 @@ function IocTable({ id, iocs, type }: { id: string; iocs: Ioc[]; type: IocType }
           return <tr key={ioc.id}>
             <td className={`ioc-value-cell ${type === 'user_agent' ? 'ioc-user-agent' : 'mono'}`}><Link className="ioc-value-link" to={valueLink(id, ioc)} title={ioc.value}>{value}{type === 'url' && ioc.value.length > 80 ? '...' : ''}</Link></td>
             {showScope && <td><span className={scopeClass(ioc.scope)}>{ioc.scope}</span></td>}
-            <td className="mono numeric">{formatNumber(ioc.occurrences)}</td>
+            <td className="mono occurrence-center">{formatNumber(ioc.occurrences)}</td>
             <td className="mono">{formatTimestamp(ioc.first_seen)}</td>
             {showLastSeen && <td className="mono">{formatTimestamp(ioc.last_seen)}</td>}
             <td className={link ? 'ioc-evidence-cell ioc-clickable-cell' : 'ioc-evidence-cell'}>{link ? <Link className="text-link" to={link}>{evidenceLabel(ioc)}</Link> : <span className="ioc-muted-evidence">{evidenceLabel(ioc)}</span>}</td>

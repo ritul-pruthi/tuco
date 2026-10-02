@@ -53,11 +53,11 @@ export function FlowsPage() {
         {hostFilter && <div className="filter-bar"><span>Filtered by host <span className="mono">{hostFilter}</span></span><Link className="text-link" to={`/investigations/${id}/connections`}>Clear filter</Link></div>}
         {isLoading ? <p className="detail-state">Loading connections...</p> : error ? <p className="detail-state detail-error" role="alert">{error}</p> : visibleFlows.length === 0 ? <p className="detail-state">No connections found.</p> : (
           <div className="table-wrap"><table className="data-table">
-            <thead><tr><th>Source</th><th>Destination</th><th>Protocol</th><th>State</th><th className="numeric">Sent pkts</th><th className="numeric">Recv pkts</th><th className="numeric">Sent bytes</th><th className="numeric">Recv bytes</th><th>First seen</th><th>Last seen</th></tr></thead>
+            <thead><tr><th>Source</th><th>Destination</th><th className="protocol-center">Protocol</th><th>State</th><th className="numeric-center">Sent pkts</th><th className="numeric-center">Recv pkts</th><th className="numeric">Sent bytes</th><th className="numeric">Recv bytes</th><th>First seen</th><th>Last seen</th></tr></thead>
             <tbody>{visibleFlows.map((flow) => <tr key={flow.id}>
               <td className="mono">{flow.src_ip}:{flow.src_port}</td><td className="mono">{flow.dst_ip}:{flow.dst_port}</td>
-              <td className={`mono ${protocolClass(flow.protocol)}`}>{flow.protocol}</td><td className="mono">{flow.tcp_state ?? '—'}</td>
-              <td className="mono numeric">{formatNumber(flow.packets_sent)}</td><td className="mono numeric">{formatNumber(flow.packets_received)}</td>
+              <td className={`mono protocol-center ${protocolClass(flow.protocol)}`}>{flow.protocol}</td><td className="mono">{flow.tcp_state ?? '—'}</td>
+              <td className="mono numeric-center">{formatNumber(flow.packets_sent)}</td><td className="mono numeric-center">{formatNumber(flow.packets_received)}</td>
               <td className="mono numeric">{formatBytes(flow.bytes_sent)}</td><td className="mono numeric">{formatBytes(flow.bytes_received)}</td>
               <td className="mono">{formatTimestamp(flow.first_seen)}</td><td className="mono">{formatTimestamp(flow.last_seen)}</td>
             </tr>)}</tbody>

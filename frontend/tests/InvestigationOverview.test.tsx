@@ -37,9 +37,24 @@ describe('InvestigationOverview', () => {
     expect(screen.getByText('1,234')).toBeInTheDocument()
     expect(screen.getByText('1 medium')).toBeInTheDocument()
     expect(screen.getAllByText('10.0.0.1')).not.toHaveLength(0)
-    expect(screen.getByRole('link', { name: '10.0.0.1' })).toHaveAttribute('href', `/investigations/${investigation.id}/connections?host=10.0.0.1`)
-    expect(screen.getByRole('link', { name: 'View host details' })).toHaveAttribute('href', `/investigations/${investigation.id}/hosts?highlight=${encodeURIComponent(host.ip)}`)
     expect(screen.getByRole('link', { name: 'View all 1 hosts' })).toHaveAttribute('href', `/investigations/${investigation.id}/hosts`)
+    expect(screen.queryByRole('link', { name: '10.0.0.1' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'View all connections' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /timeline/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /detections/i })).not.toBeInTheDocument()
+  })
+
+  it('centers packet totals and observable occurrences in their summary tables', async () => {
+    mockFetch({ iocs: [ioc] })
+    renderPage()
+    await screen.findByText('http.pcap')
+
+    expect(screen.getByRole('columnheader', { name: 'Sent PKTS' })).toHaveClass('numeric-center')
+    expect(screen.getByRole('columnheader', { name: 'Received PKTS' })).toHaveClass('numeric-center')
+    expect(screen.getByRole('cell', { name: '10' })).toHaveClass('numeric-center')
+    expect(screen.getByRole('cell', { name: '20' })).toHaveClass('numeric-center')
+    expect(screen.getByRole('columnheader', { name: 'Occurrences' })).toHaveClass('numeric-center')
+    expect(screen.getByRole('cell', { name: '4' })).toHaveClass('numeric-center')
   })
 
   it('renders the not found state', async () => {
@@ -61,7 +76,8 @@ describe('InvestigationOverview', () => {
     renderPage()
     expect(await screen.findByText('Observables')).toBeInTheDocument()
     expect(screen.getByText('1 IPv4')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: ioc.value })).toHaveAttribute('href', `/investigations/${investigation.id}/connections?host=${ioc.value}`)
+    expect(screen.queryByRole('link', { name: ioc.value })).not.toBeInTheDocument()
+    expect(screen.getAllByText(ioc.value)).not.toHaveLength(0)
   })
 
   it('hides observables when IOCs are empty', async () => {

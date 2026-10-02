@@ -33,6 +33,7 @@ function matchesFilter(event: TimelineEvent, filter: TimelineFilter): boolean {
 function evidenceLink(id: string, event: TimelineEvent): string | null {
   if (event.evidence_type === 'host') return `/investigations/${id}/hosts`
   if (event.evidence_type === 'flow') return `/investigations/${id}/connections`
+  if (event.evidence_type === 'http') return `/investigations/${id}/http`
   if (event.evidence_type === 'detection') return `/investigations/${id}/detections/${event.evidence_id}`
   return null
 }

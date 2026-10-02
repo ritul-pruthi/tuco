@@ -80,13 +80,13 @@ export function HostsPage() {
         {isLoading ? <p className="detail-state">Loading hosts...</p> : error ? <p className="detail-state detail-error" role="alert">{error}</p> : sortedHosts.length === 0 ? <p className="detail-state">No hosts found in this capture.</p> : (
           <div className="table-wrap">
             <table className="data-table">
-              <thead><tr><th>IP</th><th>MAC</th><th>Scope</th><th className="numeric">Sent pkts</th><th className="numeric">Recv pkts</th><th className="numeric">Sent bytes</th><th className="numeric">Recv bytes</th><th className="numeric">Unique dsts</th><th className="numeric">Unique ports</th><th>First seen</th></tr></thead>
+              <thead><tr><th>IP</th><th>MAC</th><th>Scope</th><th className="numeric-center">Sent pkts</th><th className="numeric-center">Recv pkts</th><th className="numeric">Sent bytes</th><th className="numeric">Recv bytes</th><th className="numeric-center">Unique dsts</th><th className="numeric-center">Unique ports</th><th>First seen</th></tr></thead>
               <tbody>{sortedHosts.map((host) => <tr className={host.id === highlightedHostId ? 'row-highlighted' : undefined} key={host.id} ref={host.ip === highlightIp ? highlightedHostRef : undefined}>
                 <td><Link className="ip-link" to={`/investigations/${id}/connections?host=${encodeURIComponent(host.ip)}`}>{host.ip}</Link></td>
                 <td className="mono">{host.mac ?? '—'}</td><td>{host.scope}</td>
-                <td className="mono numeric">{formatNumber(host.packets_sent)}</td><td className="mono numeric">{formatNumber(host.packets_received)}</td>
+                <td className="mono numeric-center">{formatNumber(host.packets_sent)}</td><td className="mono numeric-center">{formatNumber(host.packets_received)}</td>
                 <td className="mono numeric">{formatBytes(host.bytes_sent)}</td><td className="mono numeric">{formatBytes(host.bytes_received)}</td>
-                <td className="mono numeric">{formatNumber(host.unique_destinations)}</td><td className="mono numeric">{formatNumber(host.unique_ports)}</td>
+                <td className="mono numeric-center">{formatNumber(host.unique_destinations)}</td><td className="mono numeric-center">{formatNumber(host.unique_ports)}</td>
                 <td className="mono">{formatTimestamp(host.first_seen)}</td>
               </tr>)}</tbody>
             </table>
