@@ -27,7 +27,12 @@ def test_generate_returns_raw_model_output(provider: OllamaProvider):
 
     post.assert_called_once_with(
         "http://localhost:11434/api/generate",
-        json={"model": "test-model", "prompt": "investigate this", "stream": False},
+        json={
+            "model": "test-model",
+            "prompt": "investigate this",
+            "stream": False,
+            "think": False,
+        },
         timeout=60.0,
     )
 

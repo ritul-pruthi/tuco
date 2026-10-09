@@ -44,6 +44,7 @@ class OllamaProvider(AIProvider):
             "model": self._model,
             "prompt": prompt,
             "stream": False,
+            "think": False,
         }
         if system is not None:
             payload["system"] = system

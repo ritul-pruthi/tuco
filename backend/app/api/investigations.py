@@ -1,8 +1,15 @@
 import logging
+import time
 import uuid
 from datetime import UTC, datetime
 from typing import Annotated
 
+from app.ai import config as ai_config
+from app.ai.evidence_bundle import build_evidence_bundle
+from app.ai.factory import get_provider
+from app.ai.prompts import PROMPT_VERSION, build_user_message, get_system_prompt
+from app.ai.provider import AIProviderError, AIProviderTimeout, AIProviderUnavailable
+from app.ai.schemas import AiSummaryResponse
 from app.core.db import get_connection
 from app.core.storage import save_upload
 from app.detections.base import DetectionContext
@@ -62,6 +69,115 @@ def get_investigation_record(investigation_id: str):
     if investigation is None:
         raise HTTPException(status_code=404, detail="Investigation not found")
     return investigation
+
+
+@router.post(
+    "/investigations/{investigation_id}/ai-summary",
+    response_model=AiSummaryResponse,
+)
+def create_ai_summary(investigation_id: str):
+    with get_connection() as conn:
+        investigation = get_investigation(conn, investigation_id)
+        if investigation is None:
+            raise HTTPException(status_code=404, detail="Investigation not found")
+        try:
+            bundle = build_evidence_bundle(conn, investigation_id)
+        except ValueError:
+            raise HTTPException(status_code=404, detail="Investigation not found")
+
+    started_at = time.monotonic()
+    try:
+        provider = get_provider()
+    except ValueError as exc:
+        logger.info(
+            "AI summary: investigation_id=%s provider=%s model=%s duration=%.3fs outcome=error",
+            investigation_id,
+            ai_config.AI_PROVIDER,
+            ai_config.AI_MODEL,
+            time.monotonic() - started_at,
+        )
+        raise HTTPException(
+            status_code=500,
+            detail=f"AI configuration error: {exc}",
+        )
+    if provider is None:
+        logger.info(
+            "AI summary: investigation_id=%s provider=%s model=%s duration=%.3fs outcome=error",
+            investigation_id,
+            ai_config.AI_PROVIDER,
+            ai_config.AI_MODEL,
+            time.monotonic() - started_at,
+        )
+        raise HTTPException(
+            status_code=503,
+            detail="AI features are disabled. Set TUCO_AI_ENABLED=true to enable.",
+        )
+
+    try:
+        raw_output = provider.generate(
+            build_user_message(bundle),
+            system=get_system_prompt(),
+        )
+    except AIProviderUnavailable:
+        logger.info(
+            "AI summary: investigation_id=%s provider=%s model=%s duration=%.3fs outcome=unavailable",
+            investigation_id,
+            provider.name,
+            provider.model,
+            time.monotonic() - started_at,
+        )
+        raise HTTPException(
+            status_code=503,
+            detail=f"AI provider is unreachable. Is Ollama running at {ai_config.AI_BASE_URL}?",
+        )
+    except AIProviderTimeout:
+        logger.info(
+            "AI summary: investigation_id=%s provider=%s model=%s duration=%.3fs outcome=timeout",
+            investigation_id,
+            provider.name,
+            provider.model,
+            time.monotonic() - started_at,
+        )
+        raise HTTPException(
+            status_code=504,
+            detail="AI generation timed out. Consider increasing TUCO_AI_TIMEOUT.",
+        )
+    except AIProviderError as exc:
+        logger.info(
+            "AI summary: investigation_id=%s provider=%s model=%s duration=%.3fs outcome=error",
+            investigation_id,
+            provider.name,
+            provider.model,
+            time.monotonic() - started_at,
+        )
+        raise HTTPException(
+            status_code=500,
+            detail=f"AI provider returned an error: {str(exc)[:200]}",
+        )
+    except Exception:  # noqa: BLE001
+        logger.info(
+            "AI summary: investigation_id=%s provider=%s model=%s duration=%.3fs outcome=error",
+            investigation_id,
+            provider.name,
+            provider.model,
+            time.monotonic() - started_at,
+        )
+        raise HTTPException(status_code=500, detail="AI summary generation failed.")
+
+    logger.info(
+        "AI summary: investigation_id=%s provider=%s model=%s duration=%.3fs outcome=success",
+        investigation_id,
+        provider.name,
+        provider.model,
+        time.monotonic() - started_at,
+    )
+    return AiSummaryResponse(
+        raw_output=raw_output,
+        provider=provider.name,
+        model=provider.model,
+        prompt_version=PROMPT_VERSION,
+        generated_at=datetime.now(UTC).isoformat(),
+    )
 
 
 @router.post("/investigations", response_model=InvestigationResponse, status_code=201)
