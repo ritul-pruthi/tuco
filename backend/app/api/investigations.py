@@ -19,6 +19,7 @@ from app.ai.prompts import (
 )
 from app.ai.provider import AIProviderError, AIProviderTimeout, AIProviderUnavailable
 from app.ai.schemas import AiSummaryResponse
+from app.ai.validator import validate_report
 from app.core.db import get_connection
 from app.core.storage import save_upload
 from app.detections.base import DetectionContext
@@ -203,6 +204,7 @@ def create_ai_summary(investigation_id: str):
             detail="AI returned a response that could not be parsed as JSON.",
         )
 
+    warnings = validate_report(report, bundle)
     markdown = render_markdown(report)
 
     logger.info(
@@ -219,6 +221,7 @@ def create_ai_summary(investigation_id: str):
         model=provider.model,
         prompt_version=PROMPT_VERSION,
         generated_at=datetime.now(UTC).isoformat(),
+        warnings=warnings,
     )
 
 

@@ -96,6 +96,30 @@ def test_ai_summary_returns_report_and_calls_provider(client: TestClient):
     assert "timeout" not in kwargs
 
 
+def test_ai_summary_reports_validator_warnings_without_editing_report(
+    client: TestClient,
+):
+    provider = provider_mock()
+    provider.generate.return_value = (
+        '{"summary":"The capture contains a short scan from 10.0.0.1 to 8.8.8.8.",'
+        '"key_findings":["The attacker contacted the observed host on multiple ports."],'
+        '"mitre_context":[{"id":"T1046","name":"Network Service Discovery","rule_ids":["port_scan_v1"]}],'
+        '"recommended_next_steps":["Consider reviewing the source host for recent scanning activity."],'
+        '"limitations":["Absence of detection is not evidence of absence of compromise."]}'
+    )
+    with patch("app.api.investigations.get_provider", return_value=provider):
+        response = client.post("/api/investigations/inv-test/ai-summary")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["warnings"]
+    assert any(
+        warning["type"] == "banned_word" and warning["value"] == "attacker"
+        for warning in body["warnings"]
+    )
+    assert "attacker" in body["report"]["key_findings"][0]
+
+
 def test_ai_summary_rejects_echoed_evidence_shape(client: TestClient):
     provider = provider_mock()
     provider.generate.return_value = (
