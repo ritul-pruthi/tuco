@@ -44,6 +44,21 @@ def test_generate_passes_system_prompt(provider: OllamaProvider):
     assert post.call_args.kwargs["json"]["system"] == "system guidance"
 
 
+def test_generate_includes_response_schema(provider: OllamaProvider):
+    schema = {"type": "object", "properties": {"summary": {"type": "string"}}}
+    with patch("app.ai.ollama_provider.httpx.post", return_value=response()) as post:
+        provider.generate("prompt", response_format=schema)
+
+    assert post.call_args.kwargs["json"]["format"] == schema
+
+
+def test_generate_omits_response_schema_without_format(provider: OllamaProvider):
+    with patch("app.ai.ollama_provider.httpx.post", return_value=response()) as post:
+        provider.generate("prompt")
+
+    assert "format" not in post.call_args.kwargs["json"]
+
+
 def test_connection_refused_raises_unavailable(provider: OllamaProvider):
     with (
         patch(

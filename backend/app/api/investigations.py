@@ -7,7 +7,16 @@ from typing import Annotated
 from app.ai import config as ai_config
 from app.ai.evidence_bundle import build_evidence_bundle
 from app.ai.factory import get_provider
-from app.ai.prompts import PROMPT_VERSION, build_user_message, get_system_prompt
+from app.ai.prompts import (
+    PROMPT_VERSION,
+    ReportSchemaError,
+    build_user_message,
+    get_report_schema,
+    get_system_prompt,
+    normalize_report,
+    parse_report_json,
+    render_markdown,
+)
 from app.ai.provider import AIProviderError, AIProviderTimeout, AIProviderUnavailable
 from app.ai.schemas import AiSummaryResponse
 from app.core.db import get_connection
@@ -117,6 +126,7 @@ def create_ai_summary(investigation_id: str):
         raw_output = provider.generate(
             build_user_message(bundle),
             system=get_system_prompt(),
+            response_format=get_report_schema(),
         )
     except AIProviderUnavailable:
         logger.info(
@@ -164,6 +174,37 @@ def create_ai_summary(investigation_id: str):
         )
         raise HTTPException(status_code=500, detail="AI summary generation failed.")
 
+    try:
+        parsed = parse_report_json(raw_output)
+        report = normalize_report(parsed)
+    except ReportSchemaError as exc:
+        logger.info(
+            "AI summary: investigation_id=%s provider=%s model=%s duration=%.3fs outcome=schema_mismatch detail=%s",
+            investigation_id,
+            provider.name,
+            provider.model,
+            time.monotonic() - started_at,
+            exc,
+        )
+        raise HTTPException(
+            status_code=502,
+            detail="AI response did not match the required report schema.",
+        )
+    except (TypeError, ValueError):
+        logger.info(
+            "AI summary: investigation_id=%s provider=%s model=%s duration=%.3fs outcome=error",
+            investigation_id,
+            provider.name,
+            provider.model,
+            time.monotonic() - started_at,
+        )
+        raise HTTPException(
+            status_code=500,
+            detail="AI returned a response that could not be parsed as JSON.",
+        )
+
+    markdown = render_markdown(report)
+
     logger.info(
         "AI summary: investigation_id=%s provider=%s model=%s duration=%.3fs outcome=success",
         investigation_id,
@@ -172,7 +213,8 @@ def create_ai_summary(investigation_id: str):
         time.monotonic() - started_at,
     )
     return AiSummaryResponse(
-        raw_output=raw_output,
+        report=report,
+        markdown=markdown,
         provider=provider.name,
         model=provider.model,
         prompt_version=PROMPT_VERSION,

@@ -31,5 +31,6 @@ class AIProvider(ABC):
         *,
         system: str | None = None,
         timeout: float | None = None,
+        response_format: dict | None = None,
     ) -> str:
         """Generate raw model output for a prompt."""

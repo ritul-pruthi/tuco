@@ -62,7 +62,13 @@ def provider_mock() -> Mock:
     provider = Mock()
     provider.name = "ollama"
     provider.model = "qwen3.5:4b"
-    provider.generate.return_value = "## Summary\nObserved network activity."
+    provider.generate.return_value = (
+        '{"summary":"The capture contains a short scan from 10.0.0.1 to 8.8.8.8.",'
+        '"key_findings":["port_scan_v1 was observed from 10.0.0.1"],'
+        '"mitre_context":[{"id":"T1046","name":"Network Service Discovery","rule_ids":["port_scan_v1"]}],'
+        '"recommended_next_steps":["Consider reviewing the source host for recent scanning activity."],'
+        '"limitations":["Absence of detection is not evidence of absence of compromise."]}'
+    )
     return provider
 
 
@@ -73,17 +79,47 @@ def test_ai_summary_returns_report_and_calls_provider(client: TestClient):
 
     assert response.status_code == 200
     body = response.json()
-    assert body["raw_output"].startswith("## Summary")
+    assert "report" in body
+    assert "markdown" in body
+    assert "raw_output" not in body
+    assert body["report"]["summary"]
     assert body["provider"] == "ollama"
     assert body["model"] == "qwen3.5:4b"
-    assert body["prompt_version"] == "v1"
+    assert body["prompt_version"] == "v5"
     assert body["generated_at"]
     assert body["warnings"] == []
+    assert "## Summary" in body["markdown"]
     provider.generate.assert_called_once()
     args, kwargs = provider.generate.call_args
     assert "<EVIDENCE>" in args[0]
     assert kwargs["system"]
     assert "timeout" not in kwargs
+
+
+def test_ai_summary_rejects_echoed_evidence_shape(client: TestClient):
+    provider = provider_mock()
+    provider.generate.return_value = (
+        '{"evidence": {}, "detections": [], "mitre_techniques": [], '
+        '"dns": [], "http": [], "tls": [], "observables": [], '
+        '"timeline_highlights": [], "limits": []}'
+    )
+    with patch("app.api.investigations.get_provider", return_value=provider):
+        response = client.post("/api/investigations/inv-test/ai-summary")
+
+    assert response.status_code == 502
+    assert response.json()["detail"] == (
+        "AI response did not match the required report schema."
+    )
+
+
+def test_ai_summary_invalid_json_returns_500(client: TestClient):
+    provider = provider_mock()
+    provider.generate.return_value = "this is not json"
+    with patch("app.api.investigations.get_provider", return_value=provider):
+        response = client.post("/api/investigations/inv-test/ai-summary")
+
+    assert response.status_code == 500
+    assert response.json()["detail"] == "AI returned a response that could not be parsed as JSON."
 
 
 def test_ai_summary_missing_investigation_returns_404(client: TestClient):

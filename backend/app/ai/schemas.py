@@ -2,7 +2,8 @@ from pydantic import BaseModel
 
 
 class AiSummaryResponse(BaseModel):
-    raw_output: str
+    report: dict
+    markdown: str
     provider: str
     model: str
     prompt_version: str
