@@ -211,6 +211,21 @@ def test_inspect_is_allowed_directive_phrasing():
     assert not any(warning["type"] == "directive_phrasing" for warning in warnings)
 
 
+def test_implement_is_allowed_directive_phrasing():
+    report = {
+        "recommended_next_steps": [
+            "Implement additional logging for host 10.0.0.10."
+        ],
+        "limitations": [
+            "Absence of detection is not evidence of absence of compromise."
+        ],
+    }
+    warnings = validate_report(report, BUNDLE)
+    assert not any(
+        warning["type"] == "directive_phrasing" for warning in warnings
+    )
+
+
 def test_deploy_is_allowed_directive_phrasing():
     report = {
         "recommended_next_steps": ["Deploy additional monitoring."],
