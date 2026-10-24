@@ -37,3 +37,6 @@ docs/internal/
 # VS Code workspace settings
 .vscode/
 
+*.db.bak
+*.db.sqlite*
+*.bak
