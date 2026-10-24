@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+import pytest
 from app.ai.validator import extract_bundle_numbers, validate_report
 
 BUNDLE = {
@@ -45,6 +46,11 @@ BUNDLE = {
         {"ioc_type": "ipv4", "value": "10.0.0.50"},
         {"ioc_type": "ipv4", "value": "8.8.8.8"},
     ],
+}
+
+MINIMAL_BUNDLE = {
+    "detections": [],
+    "mitre_techniques": [],
 }
 
 RUN_1_REPORT = {
@@ -132,6 +138,11 @@ def test_run_1_report_flags_expected_violations():
         "could indicate",
         "limitations[1]",
     ) in warning_keys
+    assert (
+        "missing_required_limitation",
+        "absence-of-detection-disclaimer",
+        "limitations",
+    ) in warning_keys
 
 
 def test_run_2_report_flags_expected_violations():
@@ -150,6 +161,11 @@ def test_run_2_report_flags_expected_violations():
         "directive_phrasing",
         "Isolate",
         "recommended_next_steps[0]",
+    ) in warning_keys
+    assert (
+        "missing_required_limitation",
+        "absence-of-detection-disclaimer",
+        "limitations",
     ) in warning_keys
 
 
@@ -184,3 +200,95 @@ def test_field_coverage():
     assert ("speculation_marker", "limitations[0]") in fields
     assert ("fabricated_number", "summary") in fields
     assert ("fabricated_number", "key_findings[0]") in fields
+
+
+def test_inspect_is_allowed_directive_phrasing():
+    report = {
+        "recommended_next_steps": ["Inspect the source host."],
+        "limitations": ["Absence of detection is not evidence of absence of compromise."],
+    }
+    warnings = validate_report(report, BUNDLE)
+    assert not any(warning["type"] == "directive_phrasing" for warning in warnings)
+
+
+def test_deploy_is_allowed_directive_phrasing():
+    report = {
+        "recommended_next_steps": ["Deploy additional monitoring."],
+        "limitations": ["Absence of detection is not evidence of absence of compromise."],
+    }
+    warnings = validate_report(report, BUNDLE)
+    assert not any(warning["type"] == "directive_phrasing" for warning in warnings)
+
+
+def test_confirms_is_a_banned_word():
+    report = {
+        "key_findings": ["The observed traffic confirms no successful connection."],
+        "limitations": ["Absence of detection is not evidence of absence of compromise."],
+    }
+    warnings = validate_report(report, BUNDLE)
+    assert any(
+        warning["type"] == "banned_word" and warning["value"] == "confirms"
+        for warning in warnings
+    )
+
+
+def test_missing_required_limitation_is_flagged():
+    report = {"limitations": ["Something else."]}
+    warnings = validate_report(report, BUNDLE)
+    assert any(
+        warning["type"] == "missing_required_limitation" for warning in warnings
+    )
+
+
+@pytest.mark.parametrize(
+    "limitation",
+    [
+        "Absence of detection is not evidence of absence of compromise.",
+        "Note: Absence of detection is not evidence of absence of compromise.",
+    ],
+)
+def test_required_limitation_is_not_flagged(limitation: str):
+    report = {"limitations": [limitation]}
+    warnings = validate_report(report, BUNDLE)
+    assert not any(
+        warning["type"] == "missing_required_limitation" for warning in warnings
+    )
+
+
+def test_canonical_limitation_with_prefix_does_not_flag_compromise():
+    report = {
+        "summary": "",
+        "key_findings": [],
+        "mitre_context": [],
+        "recommended_next_steps": [],
+        "limitations": [
+            "Note: absence of detection is not evidence of absence of compromise."
+        ],
+    }
+    warnings = validate_report(report, MINIMAL_BUNDLE)
+    assert not any(
+        w["type"] == "banned_word" and w["value"] == "compromise"
+        for w in warnings
+    )
+    assert not any(
+        w["type"] == "missing_required_limitation" for w in warnings
+    )
+
+
+def test_compromise_word_outside_limitation_is_still_flagged():
+    report = {
+        "summary": "The host is compromised.",
+        "key_findings": [],
+        "mitre_context": [],
+        "recommended_next_steps": [],
+        "limitations": [
+            "Absence of detection is not evidence of absence of compromise."
+        ],
+    }
+    warnings = validate_report(report, MINIMAL_BUNDLE)
+    assert any(
+        w["type"] == "banned_word"
+        and w["value"] == "compromised"
+        and w["field"] == "summary"
+        for w in warnings
+    )

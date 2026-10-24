@@ -19,10 +19,12 @@ class OllamaProvider(AIProvider):
         model: str,
         base_url: str = "http://localhost:11434",
         default_timeout: float = 60.0,
+        temperature: float = 0.1,
     ) -> None:
         self._model = model
         self._base_url = base_url.rstrip("/")
         self._default_timeout = default_timeout
+        self._temperature = temperature
 
     @property
     def name(self) -> str:
@@ -46,6 +48,7 @@ class OllamaProvider(AIProvider):
             "prompt": prompt,
             "stream": False,
             "think": False,
+            "options": {"temperature": self._temperature},
         }
         if system is not None:
             payload["system"] = system

@@ -32,9 +32,18 @@ def test_generate_returns_raw_model_output(provider: OllamaProvider):
             "prompt": "investigate this",
             "stream": False,
             "think": False,
+            "options": {"temperature": 0.1},
         },
         timeout=60.0,
     )
+
+
+def test_generate_uses_configured_temperature():
+    provider = OllamaProvider("test-model", temperature=0.5)
+    with patch("app.ai.ollama_provider.httpx.post", return_value=response()) as post:
+        provider.generate("investigate this")
+
+    assert post.call_args.kwargs["json"]["options"] == {"temperature": 0.5}
 
 
 def test_generate_passes_system_prompt(provider: OllamaProvider):

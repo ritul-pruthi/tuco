@@ -7,6 +7,7 @@ BANNED_WORDS = [
     "adversary",
     "malicious",
     "compromised",
+    "certainly",
     "compromise",
     "infected",
     "isolate",
@@ -14,6 +15,8 @@ BANNED_WORDS = [
     "immediately",
     "contain",
     "containment",
+    "confirm",
+    "confirms",
     "confirmed",
     "proven",
     "definitely",
@@ -23,6 +26,7 @@ BANNED_WORDS = [
     "lateral movement",
     "threat level",
     "high-confidence",
+    "undoubtedly",
 ]
 
 SPECULATION_MARKERS = [
@@ -45,6 +49,19 @@ DIRECTIVE_ALLOWED_PREFIXES = [
     "correlate",
     "verify",
     "review",
+    "inspect",
+    "examine",
+    "analyze",
+    "assess",
+    "validate",
+    "audit",
+    "check",
+    "monitor",
+    "deploy",
+    "enable",
+    "configure",
+    "escalate",
+    "notify",
 ]
 
 DIRECTIVE_FORBIDDEN_PREFIXES = [
@@ -65,8 +82,8 @@ DIRECTIVE_FORBIDDEN_PREFIXES = [
 _NUMBER_PATTERN = re.compile(r"\b\d+\b")
 _IP_PATTERN = re.compile(r"\b\d{1,3}(?:\.\d{1,3}){3}\b")
 _RULE_ID_PATTERN = re.compile(r"\b[a-z_]+_v\d+\b")
-_CANONICAL_ABSENCE_LIMITATION = (
-    "absence of detection is not evidence of absence of compromise."
+_REQUIRED_LIMITATION_SUBSTRING = (
+    "absence of detection is not evidence of absence of compromise"
 )
 
 
@@ -175,7 +192,7 @@ def validate_report(report: dict, bundle: dict) -> list[dict]:
         for phrase in BANNED_WORDS:
             if (
                 phrase == "compromise"
-                and context_lower == _CANONICAL_ABSENCE_LIMITATION
+                and _REQUIRED_LIMITATION_SUBSTRING in context_lower
             ):
                 continue
             if re.search(
@@ -196,6 +213,22 @@ def validate_report(report: dict, bundle: dict) -> list[dict]:
         for rule_id in _RULE_ID_PATTERN.findall(context):
             if rule_id not in allowed_rule_ids:
                 warnings.append(_warning("unknown_rule_id", field, rule_id, context))
+
+    limitations = report.get("limitations", [])
+    limitations_lower = " ".join(
+        limitation.lower()
+        for limitation in limitations
+        if isinstance(limitation, str)
+    )
+    if _REQUIRED_LIMITATION_SUBSTRING not in limitations_lower:
+        warnings.append(
+            _warning(
+                "missing_required_limitation",
+                "limitations",
+                "absence-of-detection-disclaimer",
+                "",
+            )
+        )
 
     for index, value in enumerate(report.get("recommended_next_steps", [])):
         if not isinstance(value, str):

@@ -12,6 +12,7 @@ def get_provider() -> AIProvider | None:
             model=config.AI_MODEL,
             base_url=config.AI_BASE_URL,
             default_timeout=config.AI_TIMEOUT,
+            temperature=config.AI_TEMPERATURE,
         )
 
     raise ValueError(f"Unknown AI provider: {config.AI_PROVIDER}")
