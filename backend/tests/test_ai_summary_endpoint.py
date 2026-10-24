@@ -79,6 +79,7 @@ def test_ai_summary_returns_report_and_calls_provider(client: TestClient):
 
     assert response.status_code == 200
     body = response.json()
+    assert len(body["report_id"]) == 32
     assert "report" in body
     assert "markdown" in body
     assert "raw_output" not in body
@@ -89,6 +90,10 @@ def test_ai_summary_returns_report_and_calls_provider(client: TestClient):
     assert body["generated_at"]
     assert body["warnings"] == []
     assert "## Summary" in body["markdown"]
+    history = client.get("/api/investigations/inv-test/ai-reports")
+    assert history.status_code == 200
+    assert len(history.json()) == 1
+    assert history.json()[0]["id"] == body["report_id"]
     provider.generate.assert_called_once()
     args, kwargs = provider.generate.call_args
     assert "<EVIDENCE>" in args[0]
@@ -134,6 +139,7 @@ def test_ai_summary_rejects_echoed_evidence_shape(client: TestClient):
     assert response.json()["detail"] == (
         "AI response did not match the required report schema."
     )
+    assert client.get("/api/investigations/inv-test/ai-reports").json() == []
 
 
 def test_ai_summary_invalid_json_returns_500(client: TestClient):
@@ -194,6 +200,29 @@ def test_ai_summary_maps_provider_errors(
         response = client.post("/api/investigations/inv-test/ai-summary")
     assert response.status_code == status_code
     assert response.json()["detail"] == detail
+    if isinstance(error, AIProviderError):
+        assert client.get("/api/investigations/inv-test/ai-reports").json() == []
+
+
+def test_ai_summary_twice_preserves_history(client: TestClient):
+    provider = provider_mock()
+    with patch("app.api.investigations.get_provider", return_value=provider):
+        first = client.post("/api/investigations/inv-test/ai-summary")
+        second = client.post("/api/investigations/inv-test/ai-summary")
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    history = client.get("/api/investigations/inv-test/ai-reports")
+    assert history.status_code == 200
+    assert [record["id"] for record in history.json()] == [
+        second.json()["report_id"],
+        first.json()["report_id"],
+    ]
+
+
+def test_ai_reports_unknown_investigation_returns_404(client: TestClient):
+    response = client.get("/api/investigations/missing/ai-reports")
+    assert response.status_code == 404
 
 
 def test_ollama_request_disables_thinking():

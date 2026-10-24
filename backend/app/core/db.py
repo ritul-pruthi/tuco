@@ -235,4 +235,24 @@ def init_db() -> None:
             ON timeline_events (investigation_id, timestamp)
             """
         )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS ai_reports (
+                id TEXT PRIMARY KEY,
+                investigation_id TEXT NOT NULL,
+                model TEXT NOT NULL,
+                prompt_version TEXT NOT NULL,
+                report_json TEXT NOT NULL,
+                markdown TEXT NOT NULL,
+                warnings_json TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_ai_reports_inv_created
+            ON ai_reports(investigation_id, created_at DESC)
+            """
+        )
         conn.commit()

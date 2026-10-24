@@ -18,12 +18,16 @@ from app.ai.prompts import (
     render_markdown,
 )
 from app.ai.provider import AIProviderError, AIProviderTimeout, AIProviderUnavailable
-from app.ai.schemas import AiSummaryResponse
+from app.ai.schemas import AiReportRecord, AiSummaryResponse
 from app.ai.validator import validate_report
 from app.core.db import get_connection
 from app.core.storage import save_upload
 from app.detections.base import DetectionContext
 from app.detections.registry import build_default_engine
+from app.investigation.ai_reports_repo import (
+    list_ai_reports_for_investigation,
+    save_ai_report,
+)
 from app.investigation.detections_repo import get_detections, save_detections
 from app.investigation.dns_repo import get_dns_records, save_dns_records
 from app.investigation.flows_repo import get_flows, save_flows
@@ -206,6 +210,26 @@ def create_ai_summary(investigation_id: str):
 
     warnings = validate_report(report, bundle)
     markdown = render_markdown(report)
+    try:
+        with get_connection() as persist_conn:
+            report_id = save_ai_report(
+                persist_conn,
+                investigation_id=investigation_id,
+                model=provider.model,
+                prompt_version=PROMPT_VERSION,
+                report=report,
+                markdown=markdown,
+                warnings=warnings,
+            )
+    except Exception:
+        logger.exception(
+            "AI summary persist failed: investigation_id=%s",
+            investigation_id,
+        )
+        raise HTTPException(
+            status_code=500,
+            detail="AI report generated but could not be persisted.",
+        )
 
     logger.info(
         "AI summary: investigation_id=%s provider=%s model=%s duration=%.3fs outcome=success",
@@ -215,6 +239,7 @@ def create_ai_summary(investigation_id: str):
         time.monotonic() - started_at,
     )
     return AiSummaryResponse(
+        report_id=report_id,
         report=report,
         markdown=markdown,
         provider=provider.name,
@@ -223,6 +248,18 @@ def create_ai_summary(investigation_id: str):
         generated_at=datetime.now(UTC).isoformat(),
         warnings=warnings,
     )
+
+
+@router.get(
+    "/investigations/{investigation_id}/ai-reports",
+    response_model=list[AiReportRecord],
+)
+def list_ai_reports(investigation_id: str):
+    with get_connection() as conn:
+        investigation = get_investigation(conn, investigation_id)
+        if investigation is None:
+            raise HTTPException(status_code=404, detail="Investigation not found")
+        return list_ai_reports_for_investigation(conn, investigation_id)
 
 
 @router.post("/investigations", response_model=InvestigationResponse, status_code=201)
