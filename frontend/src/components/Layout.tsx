@@ -9,6 +9,7 @@ const sections = [
   { label: 'HTTP', path: '/http' },
   { label: 'TLS', path: '/tls' },
   { label: 'Detections', path: '/detections' },
+  { label: 'AI Report', path: '/ai-report' },
   { label: 'Timeline', path: '/timeline' },
   { label: 'Observables', path: '/iocs' },
 ]

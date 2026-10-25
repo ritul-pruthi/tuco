@@ -8,6 +8,7 @@ import './styles/upload.css'
 import './styles/detections.css'
 import './styles/timeline.css'
 import './styles/iocs.css'
+import './styles/ai-report.css'
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(

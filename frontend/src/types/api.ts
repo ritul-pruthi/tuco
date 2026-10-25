@@ -147,3 +147,44 @@ export interface TimelineEvent {
   evidence_type: 'host' | 'flow' | 'dns' | 'http' | 'tls' | 'detection'
   evidence_id: string
 }
+
+export interface ValidationWarning {
+  type: string
+  field: string
+  value: string
+  context: string
+}
+
+export interface AiReport {
+  summary: string
+  key_findings: string[]
+  mitre_context: Array<{
+    id: string
+    name: string
+    rule_ids?: string[]
+  }>
+  recommended_next_steps: string[]
+  limitations: string[]
+}
+
+export interface AiReportRecord {
+  id: string
+  investigation_id: string
+  model: string
+  prompt_version: string
+  report: AiReport
+  markdown: string
+  warnings: ValidationWarning[]
+  created_at: string
+}
+
+export interface AiSummaryResponse {
+  report_id: string
+  report: AiReport
+  markdown: string
+  provider: string
+  model: string
+  prompt_version: string
+  generated_at: string
+  warnings: ValidationWarning[]
+}

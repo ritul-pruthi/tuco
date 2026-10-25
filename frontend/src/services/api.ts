@@ -1,4 +1,4 @@
-import type { Detection, DnsRecord, Flow, Host, HttpRecord, Ioc, InvestigationListResponse, InvestigationResponse, TimelineEvent, TlsRecord } from '../types/api'
+import type { AiReportRecord, AiSummaryResponse, Detection, DnsRecord, Flow, Host, HttpRecord, Ioc, InvestigationListResponse, InvestigationResponse, TimelineEvent, TlsRecord } from '../types/api'
 
 const API_BASE = 'http://localhost:8000/api'
 
@@ -77,6 +77,18 @@ export async function getTimeline(id: string): Promise<TimelineEvent[]> {
 export async function getIocs(id: string): Promise<Ioc[]> {
   const response = await fetch(`${API_BASE}/investigations/${encodeURIComponent(id)}/iocs`)
   return parseResponse<Ioc[]>(response)
+}
+
+export async function getAiReports(id: string): Promise<AiReportRecord[]> {
+  const response = await fetch(`${API_BASE}/investigations/${encodeURIComponent(id)}/ai-reports`)
+  return parseResponse<AiReportRecord[]>(response)
+}
+
+export async function generateAiSummary(id: string): Promise<AiSummaryResponse> {
+  const response = await fetch(`${API_BASE}/investigations/${encodeURIComponent(id)}/ai-summary`, {
+    method: 'POST',
+  })
+  return parseResponse<AiSummaryResponse>(response)
 }
 
 export async function getDetection(id: string, detectionId: string): Promise<Detection> {

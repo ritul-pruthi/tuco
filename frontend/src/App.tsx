@@ -13,6 +13,7 @@ import IocsPage from './pages/IocsPage'
 import DnsPage from './pages/DnsPage'
 import HttpPage from './pages/HttpPage'
 import TlsPage from './pages/TlsPage'
+import AiReportPage from './pages/AiReportPage'
 
 export function App() {
   return (
@@ -29,6 +30,7 @@ export function App() {
           <Route element={<TlsPage />} path="/investigations/:id/tls" />
           <Route element={<DetectionsPage />} path="/investigations/:id/detections" />
           <Route element={<DetectionDetailPage />} path="/investigations/:id/detections/:detectionId" />
+          <Route element={<AiReportPage />} path="/investigations/:id/ai-report" />
           <Route element={<TimelinePage />} path="/investigations/:id/timeline" />
           <Route element={<IocsPage />} path="/investigations/:id/iocs" />
           <Route element={<InvestigationPlaceholder />} path="/investigations/:id/:section" />
