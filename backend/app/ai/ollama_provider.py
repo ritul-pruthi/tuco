@@ -82,19 +82,6 @@ class OllamaProvider(AIProvider):
 
         try:
             output = response.json()["response"]
-            import os
-            if os.getenv("TUCO_AI_DEBUG") == "1":
-                import json as _json
-                from pathlib import Path
-                debug_dir = Path("/tmp/tuco-ai-debug")
-                debug_dir.mkdir(exist_ok=True)
-                (debug_dir / "last-request.json").write_text(
-                    _json.dumps(payload, indent=2)
-                )
-                (debug_dir / "last-response.json").write_text(
-                    _json.dumps(response.json(), indent=2)
-                )
-                (debug_dir / "last-raw-output.txt").write_text(output)
         except (ValueError, KeyError, TypeError) as exc:
             self._log_outcome(started_at, "error")
             raise AIProviderError("Ollama response did not contain raw output") from exc

@@ -40,4 +40,3 @@ docs/internal/
 *.db.bak
 *.db.sqlite*
 *.bak
-*.db.bak

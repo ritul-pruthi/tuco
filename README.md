@@ -199,7 +199,7 @@ deployments require stronger isolation and access controls. See
 
 ## Status
 
-Phase 1 complete, Phase 2 planned.
+Phase 1 complete. Phase 2 complete: local AI report generation with deterministic validation. Phase 3 planned.
 
 ## License
 
